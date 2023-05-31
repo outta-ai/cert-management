@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@prisma/client";
+import { Certificate, User } from "@prisma/client";
 import Pagination from "components/Pagination";
 import { useDebounce } from "lib/debounce";
 import { useEffect, useState } from "react";
@@ -11,11 +11,13 @@ import {
   withDefault,
 } from "use-query-params";
 
+type FullCertificate = Certificate & { user: User };
+
 type Props = {
-  users: User[];
+  certs: FullCertificate[];
 };
 
-export default function Form({ users: fullUsers }: Props) {
+export default function Form({ certs: fullCerts }: Props) {
   const [{ page, search: paramSearch }, setQuery] = useQueryParams({
     page: withDefault(NumberParam, 1),
     search: withDefault(StringParam, undefined),
@@ -25,21 +27,29 @@ export default function Form({ users: fullUsers }: Props) {
   const [search, setSearch] = useState(paramSearch);
   const debouncedSearch = useDebounce(search, 100);
 
-  const users = fullUsers
-    .filter((user) => {
+  const certs = fullCerts
+    .filter((cert) => {
       if (!search || !search.trim()) {
         return true;
       }
 
-      if (user.clerkId?.includes(search)) {
+      if (cert.name.includes(search)) {
         return true;
       }
 
-      if (user.email.includes(search)) {
+      if (cert.content.includes(search)) {
         return true;
       }
 
-      if (user.name.includes(search)) {
+      if (cert.user.clerkId?.includes(search)) {
+        return true;
+      }
+
+      if (cert.user.email.includes(search)) {
+        return true;
+      }
+
+      if (cert.user.name.includes(search)) {
         return true;
       }
 
@@ -55,38 +65,18 @@ export default function Form({ users: fullUsers }: Props) {
     <>
       <form className="w-full" onSubmit={(e) => e.preventDefault()}>
         <input
-          placeholder="검색 (Clerk ID, 이메일, 이름)"
+          placeholder="검색 (증명서 제목, 증명서 내용, Clerk ID, 이메일, 이름)"
           className="rounded-md border-gray-300 border p-2 w-full"
           value={search || ""}
           onChange={(e) => setSearch(e.currentTarget.value)}
         />
-        <div className="mt-3">
-          {users.map((user) => (
-            <div
-              onClick={() => {
-                setQuery({ user: user.id });
-              }}
-              onKeyDown={() => {
-                setQuery({ user: user.id });
-              }}
-              className="flex flex-col md:flex-row p-3 border-b border-gray-200 last-of-type:border-b-0 cursor-pointer"
-              key={user.id}
-            >
-              <p className="font-semibold text-gray-800 mr-3">{user.name}</p>
-              <p className="text-gray-600">{user.email}</p>
-              <div className="flex-1" />
-              <p className="text-gray-300 overflow-hidden text-ellipsis">
-                {user.clerkId}
-              </p>
-            </div>
-          ))}
-        </div>
+        <div className="mt-3"></div>
       </form>
       <div className="flex justify-center">
         <Pagination
           page={page}
           setPage={(page) => setQuery({ page })}
-          total={users.length}
+          total={certs.length}
         />
       </div>
     </>

@@ -6,6 +6,8 @@ import { User } from "@prisma/client";
 
 import { StringParam, useQueryParam } from "use-query-params";
 
+import IconClose from "assets/icons/icon_close.svg";
+
 type ContentProps = {
   user: User;
   onlyAdmin: boolean;
@@ -46,11 +48,16 @@ function UserInfoContent({ user, onlyAdmin, onClose }: ContentProps) {
   };
 
   return (
-    <div className="flex flex-col w-full  h-full">
-      <p className="text-2xl font-bold">{user.name}</p>
+    <div className="flex flex-col w-full h-full">
+      <div className="flex items-center">
+        <IconClose className="w-6 h-6 cursor-pointer mr-3" onClick={onClose} />
+        <p className="text-2xl font-bold">{user.name}</p>
+      </div>
       <div className="mt-3">
         <p className="font-semibold">Clerk ID</p>
-        <p className="text-gray-800">{user.clerkId}</p>
+        <p className="text-gray-800 overflow-hidden text-ellipsis">
+          {user.clerkId}
+        </p>
       </div>
       <div className="mt-3">
         <p className="font-semibold">이메일</p>
@@ -125,7 +132,7 @@ export default function UserInfo({ users }: Props) {
       onKeyDown={() => setUserId(undefined)}
     >
       <div
-        className="absolute right-0 w-1/3 h-screen overflow-y-auto bg-white z-20 p-6"
+        className="absolute right-0 w-full md:w-1/2 xl:w-1/3 h-screen overflow-y-auto bg-white z-20 p-6"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.stopPropagation()}
       >

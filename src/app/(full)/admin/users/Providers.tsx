@@ -7,8 +7,8 @@ import UserAddDialog from "./(dialogs)/UserAddDialog";
 import UserFileAddDialog from "./(dialogs)/UserFileAddDialog";
 
 export const DialogContext = createContext({
-  setUserAddDialogOpen: (value: boolean) => {},
-  setUserFileAddDialogOpen: (value: boolean) => {},
+  openUserAddDialog: () => {},
+  openUserFileAddDialog: () => {},
 });
 
 export default function Providers({ children }: PropsWithChildren) {
@@ -18,7 +18,10 @@ export default function Providers({ children }: PropsWithChildren) {
   return (
     <QueryParamProvider adapter={NextAdapterApp}>
       <DialogContext.Provider
-        value={{ setUserAddDialogOpen, setUserFileAddDialogOpen }}
+        value={{
+          openUserAddDialog: () => setUserAddDialogOpen(true),
+          openUserFileAddDialog: () => setUserFileAddDialogOpen(true),
+        }}
       >
         {children}
         <UserAddDialog

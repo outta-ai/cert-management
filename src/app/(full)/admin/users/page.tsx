@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 
-import { UserButton, currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs";
 
 import { prisma } from "lib/prisma";
 
+import Header from "../Header";
 import Form from "./Form";
 import Providers from "./Providers";
 import UserAdd from "./UserAdd";
@@ -37,22 +38,12 @@ export default async function AdminUserPage() {
   return (
     <Providers>
       <main className="container mx-auto">
-        <header className="flex items-center p-6 shadow-sm">
-          <h1 className="text-2xl font-bold">OUTTA 증명서 발급센터 | 관리자</h1>
-          <a href="/admin/users" className="mx-6">
-            사용자
-          </a>
-          <a href="/admin/certs" className="mx-6">
-            증명서
-          </a>
-          <div className="flex-1" />
-          <UserButton afterSignOutUrl="/" />
-        </header>
+        <Header />
         <section className="mt-6 p-6">
           <a className="flex items-center" href="/admin/users">
             <h2 className="text-2xl font-semibold">사용자</h2>
           </a>
-          <div className="mt-3 grid grid-cols-3 gap-x-6">
+          <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-x-6">
             <div className="p-6 rounded-lg shadow-lg">
               <h3 className="text-xl font-semibold">등록된 사용자</h3>
               <p className="mt-3 text-4xl">{users.length}명</p>
