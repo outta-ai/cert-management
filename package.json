@@ -10,6 +10,8 @@
     "prisma": "dotenv -c $NODE_ENV -- prisma"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.342.0",
+    "@aws-sdk/signature-v4-crt": "^3.342.0",
     "@clerk/nextjs": "^4.19.0",
     "@prisma/client": "4.15.0",
     "@svgr/webpack": "^8.0.1",
@@ -30,6 +32,7 @@
   "devDependencies": {
     "@types/validator": "^13.7.17",
     "dotenv-cli": "^7.2.1",
+    "encoding": "^0.1.13",
     "prisma": "^4.15.0",
     "rome": "^12.1.2"
   }
