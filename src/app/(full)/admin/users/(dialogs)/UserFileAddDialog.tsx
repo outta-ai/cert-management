@@ -1,8 +1,12 @@
+"use client";
+
 import { FormEvent, useEffect, useRef, useState } from "react";
 
-import { User } from "@prisma/client";
-import IconFile from "assets/icons/icon_file.svg";
 import { useRouter } from "next/navigation";
+
+import { User } from "@prisma/client";
+
+import IconFile from "assets/icons/icon_file.svg";
 
 type DialogProps = {
   open: boolean;

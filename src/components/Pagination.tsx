@@ -1,5 +1,5 @@
-import IconCaretLeft from "assets/icons/icons_caret-left.svg";
-import IconCaretRight from "assets/icons/icons_caret-right.svg";
+import IconCaretLeft from "assets/icons/icon_caret-left.svg";
+import IconCaretRight from "assets/icons/icon_caret-right.svg";
 
 type Props = {
   className?: string;
@@ -18,7 +18,6 @@ export default function Pagination({
 }: Props) {
   const totalpages = Math.ceil(total / perPage);
   const currentBlock = Math.floor(page / 10) + 1;
-  const totalBlocks = Math.ceil(totalpages / 10);
 
   const startPage = (currentBlock - 1) * 10 + 1;
   const endPage = Math.min(currentBlock * 10, totalpages);

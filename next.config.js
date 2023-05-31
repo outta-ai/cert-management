@@ -25,6 +25,11 @@ const nextConfig = {
       exprContextCritical: false,
     };
 
+    config.externals.push({
+      sharp: "commonjs sharp",
+      canvas: "commonjs canvas",
+    });
+
     return config;
   },
 };

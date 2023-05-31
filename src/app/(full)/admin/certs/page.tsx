@@ -1,10 +1,14 @@
-import { currentUser } from "@clerk/nextjs";
-import { prisma } from "lib/prisma";
 import { redirect } from "next/navigation";
+
+import { currentUser } from "@clerk/nextjs";
+
+import { prisma } from "lib/prisma";
+
 import Header from "../Header";
-import CertAdd from "./CertAdd";
 import Form from "./Form";
 import Providers from "./Providers";
+
+import IconPlus from "assets/icons/icon_plus.svg";
 
 export default async function AdminCertPage() {
   const clerkUser = await currentUser();
@@ -53,7 +57,12 @@ export default async function AdminCertPage() {
           </div>
         </section>
         <section className="mt-6 px-6 flex justify-end">
-          <CertAdd />
+          <a
+            href="/admin/certs/new"
+            className="bg-gray-200 hover:bg-gray-300 rounded-md p-3"
+          >
+            <IconPlus className="w-5 h-5" />
+          </a>
         </section>
         <section className="mt-6 p-6">
           <Form certs={certs} />
