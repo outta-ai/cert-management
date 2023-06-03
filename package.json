@@ -1,0 +1,51 @@
+{
+  "name": "outta-certs",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prisma": "dotenv -c $NODE_ENV -- prisma",
+    "prisma:deploy": "dotenv -c $NODE_ENV -- prisma migrate deploy",
+    "prisma:generate": "dotenv -c $NODE_ENV -- prisma generate"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.342.0",
+    "@aws-sdk/s3-request-presigner": "^3.345.0",
+    "@aws-sdk/signature-v4-crt": "^3.342.0",
+    "@prisma/client": "4.15.0",
+    "@svgr/webpack": "^8.0.1",
+    "@types/node": "20.2.5",
+    "@types/react": "18.2.7",
+    "@types/react-dom": "18.2.4",
+    "autoprefixer": "10.4.14",
+    "canvas": "^2.11.2",
+    "fabric": "6.0.0-beta7",
+    "mime-types": "^2.1.35",
+    "next": "13.4.4",
+    "next-auth": "^4.22.1",
+    "next-query-params": "^4.2.1",
+    "postcss": "8.4.24",
+    "qrcode": "^1.5.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "tailwindcss": "3.3.2",
+    "typescript": "5.0.4",
+    "use-query-params": "^2.2.1",
+    "validator": "^13.9.0"
+  },
+  "devDependencies": {
+    "@types/mime-types": "^2.1.1",
+    "@types/pdfkit": "^0.12.9",
+    "@types/qrcode": "^1.5.0",
+    "@types/validator": "^13.7.17",
+    "bufferutil": "^4.0.7",
+    "dotenv-cli": "^7.2.1",
+    "encoding": "^0.1.13",
+    "pdfkit": "^0.13.0",
+    "prisma": "^4.15.0",
+    "rome": "^12.1.2"
+  }
+}

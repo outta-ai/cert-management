@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "memo" STRING NOT NULL DEFAULT '';
