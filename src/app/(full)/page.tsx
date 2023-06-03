@@ -1,36 +1,12 @@
-import { UserButton, currentUser } from "@clerk/nextjs";
-import { prisma } from "lib/prisma";
-import { redirect } from "next/navigation";
+import { withAuth } from "lib/auth";
+
+import UserButton from "components/UserButton";
 
 export default async function Home() {
-  const clerkUser = await currentUser();
-
-  // If the user is not signed in, redirect to /sign-in
-  // However, this will be already handled by the middleware
-  if (!clerkUser) {
-    redirect(`${process.env.BASE_URL}/sign-in`);
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      // Since Clerk is enforcing login by Google, we can assume that the first one is the Google Address
-      email: clerkUser.emailAddresses[0].emailAddress,
-    },
-  });
+  const user = await withAuth();
 
   if (!user) {
-    redirect("/unregistered");
-  }
-
-  if (!user.clerkId) {
-    await prisma.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        clerkId: clerkUser.id,
-      },
-    });
+    return null;
   }
 
   return (
@@ -43,7 +19,8 @@ export default async function Home() {
             관리자
           </a>
         )}
-        <UserButton afterSignOutUrl="/" />
+        {/* FIXME */}
+        <UserButton />
       </header>
     </main>
   );

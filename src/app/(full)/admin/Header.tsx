@@ -1,11 +1,12 @@
 "use client";
+import { useRef } from "react";
 
-import { UserButton } from "@clerk/nextjs";
-
-import IconBars from "assets/icons/icon_bars.svg";
 import useDisclosure from "lib/useDisclosure";
 import useOutsideClick from "lib/useOutsideClick";
-import { useRef } from "react";
+
+import UserButton from "components/UserButton";
+
+import IconBars from "assets/icons/icon_bars.svg";
 
 export default function Header() {
   const { isOpen, onToggle, onClose } = useDisclosure();
@@ -38,7 +39,7 @@ export default function Header() {
           onClick={onToggle}
         />
         <div className="flex-1 md:hidden" />
-        <UserButton afterSignOutUrl="/" />
+        <UserButton />
         <div
           ref={dropdownRef}
           className={`${

@@ -31,7 +31,7 @@ export default function Form({ users: fullUsers }: Props) {
         return true;
       }
 
-      if (user.clerkId?.includes(search)) {
+      if (user.googleId?.includes(search)) {
         return true;
       }
 
@@ -55,7 +55,7 @@ export default function Form({ users: fullUsers }: Props) {
     <>
       <form className="w-full" onSubmit={(e) => e.preventDefault()}>
         <input
-          placeholder="검색 (Clerk ID, 이메일, 이름)"
+          placeholder="검색 (Google ID, 이메일, 이름)"
           className="rounded-md border-gray-300 border p-2 w-full"
           value={search || ""}
           onChange={(e) => setSearch(e.currentTarget.value)}
@@ -76,7 +76,7 @@ export default function Form({ users: fullUsers }: Props) {
               <p className="text-gray-600">{user.email}</p>
               <div className="flex-1" />
               <p className="text-gray-300 overflow-hidden text-ellipsis">
-                {user.clerkId}
+                {user.googleId}
               </p>
             </div>
           ))}

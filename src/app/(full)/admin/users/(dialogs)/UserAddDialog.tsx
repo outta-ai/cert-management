@@ -18,7 +18,7 @@ export default function UserAddDialog({ open, onClose }: DialogProps) {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [clerkId, setClerkId] = useState("");
+  const [googleId, setGoogleId] = useState("");
   const [type, setType] = useState<User["type"]>("User");
 
   const [loading, setLoading] = useState(false);
@@ -26,7 +26,7 @@ export default function UserAddDialog({ open, onClose }: DialogProps) {
   const clear = () => {
     setName("");
     setEmail("");
-    setClerkId("");
+    setGoogleId("");
     setType("User");
   };
 
@@ -49,7 +49,7 @@ export default function UserAddDialog({ open, onClose }: DialogProps) {
       body: JSON.stringify({
         name,
         email,
-        clerkId: clerkId.trim() ? clerkId : null,
+        googleId: googleId.trim() ? googleId : null,
         type,
       }),
     });
@@ -97,12 +97,12 @@ export default function UserAddDialog({ open, onClose }: DialogProps) {
           />
         </div>
         <div className="mt-3">
-          <p className="font-semibold">Clerk ID</p>
+          <p className="font-semibold">Google ID</p>
           <input
             type="text"
-            placeholder="Clerk ID"
-            value={clerkId}
-            onChange={(e) => setClerkId(e.target.value)}
+            placeholder="Google ID"
+            value={googleId}
+            onChange={(e) => setGoogleId(e.target.value)}
             className="rounded-md border-gray-300 border p-2 w-full"
           />
         </div>

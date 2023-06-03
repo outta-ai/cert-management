@@ -17,7 +17,7 @@ const handleCSV = async (file: File) => {
   const headerMap = {
     이름: "name",
     이메일: "email",
-    "Clerk ID": "clerkId",
+    "Google ID": "googleId",
     유형: "type",
     타입: "type",
     메모: "memo",
@@ -53,7 +53,7 @@ const handleCSV = async (file: File) => {
         } else {
           user[mappedHeader] = values[i].trim() as User["type"];
         }
-      } else if (mappedHeader === "clerkId") {
+      } else if (mappedHeader === "googleId") {
         user[mappedHeader] = values[i].trim() ? values[i] : null;
       } else {
         user[mappedHeader as keyof Omit<User, "type">] = values[i].trim();

@@ -1,4 +1,4 @@
-import { currentUser } from "@clerk/nextjs";
+import { withAuth } from "lib/auth";
 import { prisma } from "lib/prisma";
 import { redirect } from "next/navigation";
 import Header from "./Header";
@@ -9,24 +9,14 @@ export const metadata = {
 };
 
 export default async function AdminPage() {
-  const clerkUser = await currentUser();
-
-  if (!clerkUser) {
-    redirect(process.env.BASE_URL);
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      clerkId: clerkUser.id,
-    },
-  });
+  const user = await withAuth();
 
   if (!user || user.type !== "Admin") {
     redirect(process.env.BASE_URL);
   }
 
   const users = await prisma.user.findMany();
-  const registeredUsers = users.filter((user) => user.clerkId);
+  const registeredUsers = users.filter((user) => user.googleId);
 
   const certs = await prisma.certificate.findMany({ include: { logs: true } });
   const logs = await prisma.certificateLog.findMany();
@@ -36,9 +26,15 @@ export default async function AdminPage() {
     <main className="container mx-auto">
       <Header />
       <section className="mt-6 p-6">
-        <a className="flex items-center" href="/admin/users">
-          <h2 className="text-2xl font-semibold">사용자</h2>
-        </a>
+        <div className="flex items-ceter">
+          <a className="flex items-center" href="/admin/users">
+            <h2 className="text-2xl font-semibold">사용자</h2>
+          </a>
+          <div className="flex-1" />
+          <a className="flex items-center" href="/admin/users">
+            <h2 className="hover:underline">사용자 관리</h2>
+          </a>
+        </div>
         <div className="mt-3 grid grid-cols-3 gap-x-6">
           <div className="p-6 rounded-lg shadow-lg">
             <h3 className="text-xl font-semibold">등록된 사용자</h3>
@@ -57,9 +53,15 @@ export default async function AdminPage() {
         </div>
       </section>
       <section className="mt-6 p-6">
-        <a className="flex items-center" href="/admin/certs">
-          <h2 className="text-2xl font-semibold">증명서</h2>
-        </a>
+        <div className="flex items-ceter">
+          <a className="flex items-center" href="/admin/certs">
+            <h2 className="text-2xl font-semibold">증명서</h2>
+          </a>
+          <div className="flex-1" />
+          <a className="flex items-center" href="/admin/certs">
+            <h2 className="hover:underline">증명서 관리</h2>
+          </a>
+        </div>
         <div className="mt-3 grid grid-cols-3 gap-x-6">
           <div className="p-6 rounded-lg shadow-lg">
             <h3 className="text-xl font-semibold">등록된 증명서</h3>

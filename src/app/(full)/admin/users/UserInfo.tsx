@@ -54,9 +54,9 @@ function UserInfoContent({ user, onlyAdmin, onClose }: ContentProps) {
         <p className="text-2xl font-bold">{user.name}</p>
       </div>
       <div className="mt-3">
-        <p className="font-semibold">Clerk ID</p>
+        <p className="font-semibold">Google ID</p>
         <p className="text-gray-800 overflow-hidden text-ellipsis">
-          {user.clerkId}
+          {user.googleId}
         </p>
       </div>
       <div className="mt-3">

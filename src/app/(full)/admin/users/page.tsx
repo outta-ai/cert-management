@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { currentUser } from "@clerk/nextjs";
-
+import { withAuth } from "lib/auth";
 import { prisma } from "lib/prisma";
 
 import Header from "../Header";
@@ -16,24 +15,14 @@ export const metadata = {
 };
 
 export default async function AdminUserPage() {
-  const clerkUser = await currentUser();
-
-  if (!clerkUser) {
-    redirect(process.env.BASE_URL);
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      clerkId: clerkUser.id,
-    },
-  });
+  const user = await withAuth();
 
   if (!user || user.type !== "Admin") {
     redirect(process.env.BASE_URL);
   }
 
   const users = await prisma.user.findMany();
-  const registeredUsers = users.filter((user) => user.clerkId);
+  const registeredUsers = users.filter((user) => user.googleId);
 
   return (
     <Providers>

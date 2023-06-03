@@ -1,34 +1,26 @@
 import { redirect } from "next/navigation";
 
-import { currentUser } from "@clerk/nextjs";
-
+import { withAuth } from "lib/auth";
 import { prisma } from "lib/prisma";
 
 import Header from "../Header";
+import CertInfo from "./CertInfo";
 import Form from "./Form";
 import Providers from "./Providers";
 
 import IconPlus from "assets/icons/icon_plus.svg";
 
 export default async function AdminCertPage() {
-  const clerkUser = await currentUser();
-
-  if (!clerkUser) {
-    redirect(process.env.BASE_URL);
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      clerkId: clerkUser.id,
-    },
-  });
+  const user = await withAuth();
 
   if (!user || user.type !== "Admin") {
     redirect(process.env.BASE_URL);
   }
 
+  const users = await prisma.user.findMany();
+
   const certs = await prisma.certificate.findMany({
-    include: { logs: true, user: true },
+    include: { logs: true },
   });
   const logs = await prisma.certificateLog.findMany();
   const issuedCerts = certs.filter((cert) => cert.logs.length > 0);
@@ -65,9 +57,10 @@ export default async function AdminCertPage() {
           </a>
         </section>
         <section className="mt-6 p-6">
-          <Form certs={certs} />
+          <Form users={users} certs={certs} />
         </section>
       </main>
+      <CertInfo users={users} certs={certs} />
     </Providers>
   );
 }

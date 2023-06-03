@@ -17,16 +17,16 @@ enum UserType {
 }
 
 model User {
-  id           String           @id @default(uuid()) @db.Uuid
-  clerkId      String?          @unique
-  email        String           @unique
-  name         String
-  memo         String           @default("")
-  type         UserType
-  certificates Certificate[]
-  logs         CertificateLog[]
+  id       String           @id @default(uuid()) @db.Uuid
+  googleId String?          @unique
+  email    String           @unique
+  name     String
+  memo     String           @default("")
+  type     UserType
+  logs     CertificateLog[]
 
-  @@index(clerkId)
+  @@index(googleId)
+  @@index(email)
 }
 
 enum CertificateType {
@@ -39,8 +39,7 @@ model Certificate {
   content   String
   issuedAt  DateTime
   expiresAt DateTime?
-  userId    String           @db.Uuid
-  user      User             @relation(fields: [userId], references: [id])
+  userIds   String[]         @db.Uuid
   logs      CertificateLog[]
 }
 

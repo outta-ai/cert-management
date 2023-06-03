@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { currentUser } from "@clerk/nextjs";
-
+import { withAuth } from "lib/auth";
 import { prisma } from "lib/prisma";
 
 import Header from "../../Header";
@@ -10,21 +9,13 @@ import Form from "./Form";
 import IconChevronLeft from "assets/icons/icon_chevron-left.svg";
 
 export default async function NewCertPage() {
-  const clerkUser = await currentUser();
-
-  if (!clerkUser) {
-    redirect(process.env.BASE_URL);
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      clerkId: clerkUser.id,
-    },
-  });
+  const user = await withAuth();
 
   if (!user || user.type !== "Admin") {
     redirect(process.env.BASE_URL);
   }
+
+  const users = await prisma.user.findMany({});
 
   return (
     <main className="container mx-auto">
@@ -40,7 +31,7 @@ export default async function NewCertPage() {
           <h2>증명서 추가는 PC에서만 가능합니다</h2>
         </div>
         <div className="hidden md:block">
-          <Form />
+          <Form users={users} />
         </div>
       </section>
     </main>

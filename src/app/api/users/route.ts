@@ -1,14 +1,14 @@
-import { auth } from "@clerk/nextjs";
-
+import { getServerSession } from "next-auth";
 import validator from "validator";
 
+import authOptions from "lib/auth";
 import { prisma } from "lib/prisma";
 import ResponseDTO from "lib/response";
 
 export async function POST(req: Request) {
-  const { userId } = auth();
+  const session = await getServerSession(authOptions);
 
-  if (!userId) {
+  if (!session) {
     return ResponseDTO.status(401).json({
       result: false,
       error: {
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
   const user = await prisma.user.findUnique({
     where: {
-      clerkId: userId,
+      id: session?.user?.id,
     },
   });
 
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     });
   }
 
-  const { name, email, clerkId, type } = await req.json();
+  const { name, email, googleId, type } = await req.json();
 
   if (
     !name ||
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     data: {
       name,
       email,
-      clerkId,
+      googleId,
       type,
     },
   });

@@ -1,12 +1,13 @@
-import { auth } from "@clerk/nextjs";
+import authOptions from "lib/auth";
 
 import { prisma } from "lib/prisma";
 import ResponseDTO from "lib/response";
+import { getServerSession } from "next-auth";
 
 export async function POST(req: Request) {
-  const { userId: reqUserId } = auth();
+  const session = await getServerSession(authOptions);\
 
-  if (!reqUserId) {
+  if (!session) {
     return ResponseDTO.status(401).json({
       result: false,
       error: {
@@ -18,7 +19,7 @@ export async function POST(req: Request) {
 
   const user = await prisma.user.findUnique({
     where: {
-      clerkId: reqUserId,
+      googleId: session.user.id,
     },
   });
 
@@ -78,9 +79,9 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  const { userId: reqUserId } = auth();
+  const session = await getServerSession(authOptions);
 
-  if (!reqUserId) {
+  if (!session) {
     return ResponseDTO.status(401).json({
       result: false,
       error: {
@@ -92,7 +93,7 @@ export async function DELETE(req: Request) {
 
   const user = await prisma.user.findUnique({
     where: {
-      clerkId: reqUserId,
+      googleId: session.user.id,
     },
   });
 

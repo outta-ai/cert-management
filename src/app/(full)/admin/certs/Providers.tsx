@@ -1,4 +1,5 @@
 "use client";
+
 import { PropsWithChildren } from "react";
 
 import NextAdapterApp from "next-query-params/app";

@@ -1,28 +1,7 @@
-import { UserButton, currentUser } from "@clerk/nextjs";
-import { prisma } from "lib/prisma";
-import { redirect } from "next/navigation";
-import SignOutButton from "./SignOut";
-
 export default async function UnregisteredPage() {
-  const clerkUser = await currentUser();
-
-  if (!clerkUser) {
-    redirect("/sign-in");
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      clerkId: clerkUser.id,
-    },
-  });
-
-  if (user) {
-    redirect("/");
-  }
-
   return (
     <main className="w-full max-w-sm m-3 shadow-lg p-6">
-      <header className="flex flex-row items-center">
+      <header className="flex flex-row justify-center">
         <div className="block sm:flex">
           <p className="font-bold text-xl text-center sm:text-2xl sm:text-left">
             OUTTA
@@ -32,8 +11,6 @@ export default async function UnregisteredPage() {
             증명서 발급센터
           </p>
         </div>
-        <div className="flex-1" />
-        <UserButton />
       </header>
       <p className="mt-6 font-semibold text-center break-keep">
         OUTTA에 등록되어 있지 않은 회원입니다.
@@ -46,7 +23,12 @@ export default async function UnregisteredPage() {
         </a>
         에게 문의해주세요.
       </p>
-      <SignOutButton />
+      <a
+        href="/login"
+        className="mt-6 block w-full border border-gray-300 rounded-md text-center p-2"
+      >
+        다시 로그인하기
+      </a>
     </main>
   );
 }

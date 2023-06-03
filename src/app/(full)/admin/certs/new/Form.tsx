@@ -1,170 +1,151 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
-import { Canvas, IText, Image, Rect } from "fabric";
+import { User } from "@prisma/client";
 
-import IconFile from "assets/icons/icon_file.svg";
-import IconHorizontal from "assets/icons/icon_horizontal.svg";
-import IconQrCode from "assets/icons/icon_qrcode.svg";
-import IconText from "assets/icons/icon_text.svg";
-import IconVertical from "assets/icons/icon_vertical.svg";
+import { Canvas, Image, Rect, Text } from "fabric";
 
-export default function Form() {
-  const rootRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+import CanvasForm, { CanvasData } from "./(forms)/CanvasForm";
+import FileForm from "./(forms)/FileForm";
+import UserForm from "./(forms)/UserForm";
+
+type Props = {
+  users: User[];
+};
+
+export default function Form({ users }: Props) {
   const fabricRef = useRef<Canvas>();
 
   const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [canvasData, setCanvasData] = useState<CanvasData[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+
   const [orientation, setOrientation] = useState<"landscape" | "portrait">(
     "portrait"
   );
-  const [imageHeight, setImageHeight] = useState(0);
 
-  useEffect(() => {
-    const canvasWidth = orientation === "landscape" ? 1024 : 720;
-    const canvasHeight = orientation === "landscape" ? 720 : 1024;
+  const [name, setName] = useState("");
+  const [issueDate, setIssueDate] = useState("");
+  const [loading, setLoading] = useState(false);
 
-    const canvas = new Canvas("canvas-main", {
-      width: canvasWidth,
-      height: canvasHeight,
-    });
-    fabricRef.current = canvas;
+  const canvasState = {
+    canvasData,
+    setCanvasData,
+    orientation,
+    setOrientation,
+  };
+  const userState = { users, selectedUsers, setSelectedUsers };
 
-    if (file) {
-      (async () => {
-        const image = await Image.fromURL(URL.createObjectURL(file));
-        image.lockMovementX = true;
-        image.lockMovementY = true;
-        image.lockScalingX = true;
-        image.lockScalingY = true;
-        image.lockRotation = true;
-        image.selectable = false;
-        image.hasControls = false;
+  const createCert = async () => {
+    setLoading(true);
 
-        if (image.width > image.height) {
-          // Center and adjust width and height to fit in the canvas
-          // image.left is calulated by the center of the image
-          image.scaleToWidth(canvas.width);
-        } else {
-          // Center and adjust width and height to fit in the canvas
-          image.scaleToHeight(canvas.height);
-        }
+    const canvas = fabricRef.current;
 
-        canvas.add(image);
-        canvas.centerObject(image);
-        setImageHeight(image.height ?? 0);
-      })();
+    if (!canvas) {
+      setLoading(false);
+      return;
     }
 
-    return () => {
-      canvas.dispose();
+    const objects = canvas._objects;
+    const image = objects.find((object) => object instanceof Image) as Image;
+    const texts = objects.filter((object) => object instanceof Text) as Text[];
+    const rects = objects.filter((object) => object instanceof Rect) as Rect[];
+
+    if (!image) {
+      setLoading(false);
+      return;
+    }
+
+    const content = {
+      image: {
+        data: image.toDataURL(),
+        width: image.getScaledWidth(),
+        height: image.getScaledHeight(),
+        left: image.left,
+        top: image.top,
+      },
+      texts: texts.map((text) => {
+        return {
+          data: text.text,
+          scale: text.scaleX,
+          left: text.left,
+          top: text.top,
+        };
+      }),
+      rects: rects.map((rect) => {
+        return {
+          width: rect.getScaledWidth(),
+          height: rect.getScaledHeight(),
+          left: rect.left,
+          top: rect.top,
+        };
+      }),
+      orientation,
     };
-  }, [orientation, file]);
 
-  const addText = useCallback(() => {
-    const text = new IText("여기에 텍스트 입력", {});
-    fabricRef.current?.add(text);
-    fabricRef.current?.bringObjectToFront(text);
-  }, [fabricRef.current]);
-
-  const addQrCode = useCallback(() => {
-    const rect = new Rect({
-      width: 100,
-      height: 100,
-      fill: "red",
+    const result = await fetch("/api/certs", {
+      method: "POST",
+      body: JSON.stringify({
+        content,
+        name,
+        issuedAt: issueDate,
+        users: selectedUsers.map((user) => user.id),
+      }),
+      credentials: "include",
     });
-    fabricRef.current?.add(rect);
-    fabricRef.current?.bringObjectToFront(rect);
-  }, [fabricRef.current]);
+
+    console.log(result);
+
+    setLoading(false);
+
+    window.location.href = "/admin/certs";
+  };
 
   return (
-    <div className="w-full" ref={rootRef}>
-      <div className="mt-3">
-        <p>
-          <span className="font-semibold">1.</span> 증명서 배경을 선택해 주세요
+    <div className="w-full">
+      <FileForm file={file} setFile={setFile} />
+      <CanvasForm file={file} fabricRef={fabricRef} {...canvasState} />
+      <UserForm file={file} {...userState} />
+      <div className={`${file ? "block" : "hidden"} mt-3`}>
+        <p className="text-xl">
+          <span className="font-semibold">3.</span> 증명서 정보를 입력해 주세요
         </p>
-        <input
-          type="file"
-          className="hidden"
-          ref={fileInputRef}
-          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          accept="image/*"
-        />
-        <div className="mt-3 flex relative">
-          <div className="absolute rounded-l-md flex w-10 h-10 justify-center items-center bg-gray-300">
-            <IconFile className="w-4 h-4" />
-          </div>
+        <div className="mt-3">
+          <p className="font-semibold text-gray-600">
+            증명서 이름<span className="text-red-500">*</span>
+          </p>
           <input
             type="text"
-            className="flex-1 h-10 rounded-md border-gray-300 border p-2 pl-12 focus:outline-none cursor-pointer"
-            readOnly
-            value={file?.name ?? "파일 선택"}
-            onChange={() => {}} // do nothing
-            onClick={(e) => {
-              e.preventDefault();
-              fileInputRef.current?.click();
-            }}
+            className="w-full rounded-md p-2 border border-gray-300 focus:outline-none"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="증명서 이름"
+          />
+        </div>
+        <div className="mt-3">
+          <p className="font-semibold text-gray-600">
+            증명서 발급일자<span className="text-red-500">*</span>
+          </p>
+          <input
+            type="date"
+            className="w-full rounded-md p-2 border border-gray-300 focus:outline-none"
+            value={issueDate}
+            onChange={(e) => setIssueDate(e.target.value)}
+            placeholder="증명서 발급일자"
           />
         </div>
       </div>
-      <div className={`mt-3 ${file ? "block" : "hidden"}`}>
-        <p>
-          <span className="font-semibold">2.</span> 증명서 내용을 입력해 주세요
-        </p>
-        <div className="flex items-center">
-          <p>
-            &#123;&#123;Name&#125;&#125;, &#123;&#123;IssueDate&#125;&#125;,
-            &#123;&#123;PrintDate&#125;&#125; 등으로 날짜와 이름를 입력할 수
-            있습니다.
-          </p>
-          <div className="flex-1" />
-          <button
-            type="button"
-            className={`rounded-l-md ${
-              orientation === "portrait"
-                ? "bg-gray-200 hover:bg-gray-300"
-                : "bg-gray-400 hover:bg-gray-500"
-            }  p-2`}
-            onClick={() => setOrientation("landscape")}
-          >
-            <IconHorizontal className="w-5 h-5" />
-          </button>
-          <button
-            type="button"
-            className={`rounded-r-md ${
-              orientation === "landscape"
-                ? "bg-gray-200 hover:bg-gray-300"
-                : "bg-gray-400 hover:bg-gray-500"
-            } p-2`}
-            onClick={() => setOrientation("portrait")}
-          >
-            <IconVertical className="w-5 h-5" />
-          </button>
-          <div className="w-3" />
-          <button
-            type="button"
-            className="rounded-md bg-gray-200 hover:bg-gray-300 p-2"
-            onClick={addText}
-          >
-            <IconText className="w-5 h-5" />
-          </button>
-          <div className="w-3" />
-          <button
-            type="button"
-            className="rounded-md bg-gray-200 hover:bg-gray-300 p-2"
-            onClick={addQrCode}
-          >
-            <IconQrCode className="w-5 h-5" />
-          </button>
-        </div>
-        <canvas
-          id="canvas-main"
-          className="mt-3 mx-auto border border-gray-300"
-          width={orientation === "landscape" ? 1024 : 720}
-          height={orientation === "landscape" ? 720 : 1024}
-        />
+      <hr className="my-6" />
+      <div className={`${file ? "flex" : "hidden"} justify-end`}>
+        <button
+          type="button"
+          onClick={createCert}
+          disabled={loading || !selectedUsers.length}
+          className="mt-6 py-2 px-4 bg-blue-500 focus:bg-blue-600 text-white rounded-md disabled:opacity-50"
+        >
+          증명서 등록하기
+        </button>
       </div>
     </div>
   );
