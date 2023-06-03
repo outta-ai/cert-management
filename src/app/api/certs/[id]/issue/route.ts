@@ -162,8 +162,6 @@ export async function POST(req: Request) {
     height: canvasHeight,
   });
 
-  // TODO: Load nodeCanvas Font Here
-
   const imageCommand = new GetObjectCommand({
     Bucket: process.env.AWS_S3_BUCKET_NAME,
     Key: `certs/images/${content.image.data}`,
