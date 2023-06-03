@@ -17,6 +17,23 @@ const authOptions = {
         const googleProfile = profile as GoogleProfile;
         const googleId = googleProfile.sub;
 
+        if (
+          process.env.DEFAULT_ADMIN_EMAIL &&
+          googleProfile.email === process.env.DEFAULT_ADMIN_EMAIL
+        ) {
+          await prisma.user.create({
+            data: {
+              name: googleProfile.name,
+              email: googleProfile.email,
+              googleId,
+              type: "Admin",
+              memo: "Default admin user",
+            },
+          });
+
+          return true;
+        }
+
         const databaseUser = await prisma.user.findUnique({
           where: {
             email: googleProfile.email,
