@@ -21,5 +21,5 @@ patchelf --replace-needed /lib64/libz.so.1 libz.so.X ./node_modules/canvas/build
 patchelf --replace-needed libz.so.1 libz.so.X ./node_modules/canvas/build/Release/libpng16.so.16
 
 if [ -n VERCEL_URL ]; then
-    echo "BASE_URL=$VERCEL_URL" >> .env
+    echo "BASE_URL=https://$VERCEL_URL" >> .env
 fi
