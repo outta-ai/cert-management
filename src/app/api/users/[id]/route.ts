@@ -5,7 +5,7 @@ import ResponseDTO from "lib/response";
 import { getServerSession } from "next-auth";
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);\
+  const session = await getServerSession(authOptions);
 
   if (!session) {
     return ResponseDTO.status(401).json({

@@ -1,14 +1,13 @@
 import crypto from "crypto";
 
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import mime from "mime-types";
+import { getServerSession } from "next-auth";
 
+import authOptions from "lib/auth";
 import { dataURItoUint8Array } from "lib/dataURI";
 import { prisma } from "lib/prisma";
 import ResponseDTO from "lib/response";
-
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import authOptions from "lib/auth";
-import { getServerSession } from "next-auth";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
@@ -123,58 +122,5 @@ export async function POST(req: Request) {
       title: "Internal Server Error",
       message: "Something went wrong while creating the certificate",
     },
-  });
-}
-
-export async function DELETE(req: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return ResponseDTO.status(401).json({
-      result: false,
-      error: {
-        title: "Unauthorized",
-        message: "You are not authorized to perform this action",
-      },
-    });
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      id: session.user.id,
-    },
-  });
-
-  if (!user || user.type !== "Admin") {
-    return ResponseDTO.status(403).json({
-      result: false,
-      error: {
-        title: "Forbidden",
-        message: "You are not authorized to perform this action",
-      },
-    });
-  }
-
-  const url = new URL(req.url);
-  const id = url.searchParams.get("id");
-
-  if (!id) {
-    return ResponseDTO.status(400).json({
-      result: false,
-      error: {
-        title: "Bad Request",
-        message: "Invalid request body",
-      },
-    });
-  }
-
-  await prisma.certificate.delete({
-    where: {
-      id,
-    },
-  });
-
-  return ResponseDTO.status(200).json({
-    result: true,
   });
 }

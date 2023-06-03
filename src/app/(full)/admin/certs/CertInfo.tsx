@@ -1,11 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Certificate, User } from "@prisma/client";
-import { Canvas, Image, Rect, Text } from "fabric";
-import NextImage from "next/image";
 import { StringParam, useQueryParam } from "use-query-params";
 
+import CertPreview from "components/CertPreview";
 import Pagination from "components/Pagination";
 
 import IconClose from "assets/icons/icon_close.svg";
@@ -41,65 +40,7 @@ type CertContent = {
 
 function CertInfoContent({ cert, users, onClose }: ContentProps) {
   const [userPage, setUserPage] = useState(1);
-  const [preview, setPreview] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const certContent = JSON.parse(cert.content) as CertContent;
-
-  const canvasWidth = certContent.orientation === "landscape" ? 1024 : 720;
-  const canvasHeight = certContent.orientation === "landscape" ? 720 : 1024;
-
-  useEffect(() => {
-    const canvas = new Canvas("canvas-hidden", {
-      width: canvasWidth,
-      height: canvasHeight,
-    });
-
-    (async () => {
-      const imageResponse = await fetch(
-        `/api/images?id=${certContent.image.data}`
-      );
-      const imageBlob = await imageResponse.blob();
-      const image = await Image.fromURL(URL.createObjectURL(imageBlob));
-
-      image.set("width", certContent.image.width);
-      image.set("height", certContent.image.height);
-      image.set("left", certContent.image.left);
-      image.set("top", certContent.image.top);
-      canvas.add(image);
-
-      canvas.sendObjectToBack(image);
-
-      canvas.renderAll();
-
-      setPreview(canvas.toDataURL());
-    })();
-
-    certContent.texts.forEach((text) => {
-      const textObject = new Text(text.data, {
-        scaleX: text.scale,
-        scaleY: text.scale,
-        left: text.left,
-        top: text.top,
-      });
-      canvas.add(textObject);
-    });
-
-    certContent.rects.forEach((rect) => {
-      const rectObject = new Rect({
-        width: rect.width,
-        height: rect.height,
-        left: rect.left,
-        top: rect.top,
-        fill: "#FF0000",
-      });
-      canvas.add(rectObject);
-    });
-
-    return () => {
-      canvas.dispose();
-    };
-  }, [cert]);
 
   const deleteCert = async () => {
     if (!confirm("정말 삭제하시겠습니까?")) {
@@ -108,7 +49,7 @@ function CertInfoContent({ cert, users, onClose }: ContentProps) {
 
     setLoading(true);
 
-    const response = await fetch(`/api/certs?id=${cert.id}`, {
+    const response = await fetch(`/api/certs/${cert.id}`, {
       method: "DELETE",
     });
 
@@ -155,16 +96,7 @@ function CertInfoContent({ cert, users, onClose }: ContentProps) {
       </div>
       <div className="mt-3">
         <h4 className="text-lg font-semibold">미리보기</h4>
-        <NextImage
-          className={`mt-3 ${preview ? "" : "hidden"}`}
-          src={preview}
-          alt="Certificate Preview"
-          width={canvasWidth}
-          height={canvasHeight}
-        />
-        <div className="hidden">
-          <canvas id="canvas-hidden" className="hidden" width={720} />
-        </div>
+        <CertPreview content={cert.content} />
       </div>
       <div className="flex-1" />
       <div className="flex justify-end">

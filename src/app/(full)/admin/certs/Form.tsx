@@ -98,7 +98,7 @@ export default function Form({ certs: fullCerts, users }: Props) {
           </div>
         ))}
       </div>
-      <div className="flex justify-center">
+      <div className="mt-3 flex justify-center">
         <Pagination
           page={page}
           setPage={(page) => setQuery({ page })}

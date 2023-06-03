@@ -35,7 +35,7 @@ export default async function AdminPage() {
             <h2 className="hover:underline">사용자 관리</h2>
           </a>
         </div>
-        <div className="mt-3 grid grid-cols-3 gap-x-6">
+        <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-x-6">
           <div className="p-6 rounded-lg shadow-lg">
             <h3 className="text-xl font-semibold">등록된 사용자</h3>
             <p className="mt-3 text-4xl">{users.length}명</p>
@@ -62,7 +62,7 @@ export default async function AdminPage() {
             <h2 className="hover:underline">증명서 관리</h2>
           </a>
         </div>
-        <div className="mt-3 grid grid-cols-3 gap-x-6">
+        <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-x-6">
           <div className="p-6 rounded-lg shadow-lg">
             <h3 className="text-xl font-semibold">등록된 증명서</h3>
             <p className="mt-3 text-4xl">{certs.length}개</p>

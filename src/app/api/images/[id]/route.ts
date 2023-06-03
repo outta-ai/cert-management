@@ -14,7 +14,7 @@ const s3 = new S3Client({
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const id = url.searchParams.get("id");
+  const id = url.pathname.split("/").pop();
 
   if (!id || id.includes("/")) {
     return ResponseDTO.status(400).json({

@@ -49,8 +49,5 @@ model CertificateLog {
   certificate   Certificate @relation(fields: [certificateId], references: [id])
   userId        String      @db.Uuid
   user          User        @relation(fields: [userId], references: [id])
-  issuedAt      DateTime
-  printedAt     DateTime
-  expiresAt     DateTime?
   createdAt     DateTime    @default(now())
 }

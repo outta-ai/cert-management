@@ -18,7 +18,9 @@ function UserButtonContent() {
   return (
     <div className="relative">
       <p className="cursor-pointer" onClick={onToggle} onKeyDown={onToggle}>
-        Welcome {session.data?.user?.name || ""}!
+        환영합니다,{" "}
+        <span className="font-semibold">{session.data?.user?.name || ""}</span>
+        님!
       </p>
       <div
         ref={dropdownRef}
