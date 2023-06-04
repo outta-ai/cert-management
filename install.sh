@@ -1,4 +1,4 @@
-yum install pactchelf
+yum install pactchelf wget
 
 wget https://zlib.net/fossils/zlib-1.2.9.tar.gz
 tar -xf zlib-1.2.9.tar.gz
