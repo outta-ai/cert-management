@@ -32,9 +32,6 @@ const nextConfig = {
 
     return config;
   },
-  experimental: {
-    outputFileTracingIgnores: ["**canvas**"],
-  },
 };
 
 module.exports = nextConfig;
