@@ -1,4 +1,13 @@
-yum install pactchelf wget
+yum install wget
+
+wget https://github.com/NixOS/patchelf/archive/refs/tags/0.17.0.tar.gz
+tar -xf 0.17.0.tar.gz
+cd patchelf-0.17.0
+./bootstrap.sh
+./configure
+make
+make install
+cd ..
 
 wget https://zlib.net/fossils/zlib-1.2.9.tar.gz
 tar -xf zlib-1.2.9.tar.gz
