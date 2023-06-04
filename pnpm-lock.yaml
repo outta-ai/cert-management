@@ -14,6 +14,9 @@ dependencies:
   '@aws-sdk/signature-v4-crt':
     specifier: ^3.342.0
     version: 3.342.0(bufferutil@4.0.7)
+  '@maxswjeon/canvas':
+    specifier: 2.11.2-lite
+    version: 2.11.2-lite(encoding@0.1.13)
   '@prisma/client':
     specifier: 4.15.0
     version: 4.15.0(prisma@4.15.0)
@@ -32,9 +35,6 @@ dependencies:
   autoprefixer:
     specifier: 10.4.14
     version: 10.4.14(postcss@8.4.24)
-  canvas:
-    specifier: ^2.11.2
-    version: 2.11.2(encoding@0.1.13)
   fabric:
     specifier: 6.0.0-beta7
     version: 6.0.0-beta7(bufferutil@4.0.7)(encoding@0.1.13)
@@ -2545,6 +2545,19 @@ packages:
       - supports-color
     dev: false
 
+  /@maxswjeon/canvas@2.11.2-lite(encoding@0.1.13):
+    resolution: {integrity: sha512-sqCU7O1ztqJucHz4TkwZ+XavaKtyjKBjjW59rGzYMrfzYudOGukFCQnClj7OhwuPhXqbsua9HmzfKBjG9bEVXw==}
+    engines: {node: '>=6'}
+    requiresBuild: true
+    dependencies:
+      '@mapbox/node-pre-gyp': 1.0.10(encoding@0.1.13)
+      nan: 2.17.0
+      simple-get: 3.1.1
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+    dev: false
+
   /@next/env@13.4.4:
     resolution: {integrity: sha512-q/y7VZj/9YpgzDe64Zi6rY1xPizx80JjlU2BTevlajtaE3w1LqweH1gGgxou2N7hdFosXHjGrI4OUvtFXXhGLg==}
     dev: false
@@ -3356,6 +3369,7 @@ packages:
       - encoding
       - supports-color
     dev: false
+    optional: true
 
   /chainsaw@0.1.0:
     resolution: {integrity: sha512-75kWfWt6MEKNC8xYXIdRpDehRYY/tNSgwKaJq+dbbDcxORuVrrQ+SEHoWsniVn9XPYfP4gmdWIeDk/4YNp1rNQ==}
