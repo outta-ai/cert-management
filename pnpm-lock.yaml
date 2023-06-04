@@ -13,7 +13,10 @@ dependencies:
     version: 3.345.0(@aws-sdk/signature-v4-crt@3.342.0)
   '@aws-sdk/signature-v4-crt':
     specifier: ^3.342.0
-    version: 3.342.0(bufferutil@4.0.7)
+    version: 3.342.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+  '@maxswjeon/canvas':
+    specifier: 2.11.2-lite
+    version: 2.11.2-lite(encoding@0.1.13)
   '@prisma/client':
     specifier: 4.15.0
     version: 4.15.0(prisma@4.15.0)
@@ -32,12 +35,9 @@ dependencies:
   autoprefixer:
     specifier: 10.4.14
     version: 10.4.14(postcss@8.4.24)
-  canvas:
-    specifier: ^2.11.2
-    version: 2.11.2(encoding@0.1.13)
   fabric:
     specifier: 6.0.0-beta7
-    version: 6.0.0-beta7(bufferutil@4.0.7)(encoding@0.1.13)
+    version: 6.0.0-beta7(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@5.0.10)
   mime-types:
     specifier: ^2.1.35
     version: 2.1.35
@@ -71,6 +71,9 @@ dependencies:
   use-query-params:
     specifier: ^2.2.1
     version: 2.2.1(react-dom@18.2.0)(react@18.2.0)
+  utf-8-validate:
+    specifier: ^5.0.10
+    version: 5.0.10
   validator:
     specifier: ^13.9.0
     version: 13.9.0
@@ -854,14 +857,14 @@ packages:
       tslib: 2.5.2
     dev: false
 
-  /@aws-sdk/signature-v4-crt@3.342.0(bufferutil@4.0.7):
+  /@aws-sdk/signature-v4-crt@3.342.0(bufferutil@4.0.7)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-8WlcB4eWCWdM3ChdPOIEt4hChjQ2es71ZW7hqli1V54sMH6GByCN4GUaSZrlXh7ySYNIMBp4MfZnPMw7Xp73Ww==}
     engines: {node: '>=14.0.0'}
     dependencies:
       '@aws-sdk/querystring-parser': 3.342.0
       '@aws-sdk/signature-v4': 3.342.0
       '@aws-sdk/util-middleware': 3.342.0
-      aws-crt: 1.15.17(bufferutil@4.0.7)
+      aws-crt: 1.15.17(bufferutil@4.0.7)(utf-8-validate@5.0.10)
       tslib: 2.5.2
     transitivePeerDependencies:
       - bufferutil
@@ -881,7 +884,7 @@ packages:
     dependencies:
       '@aws-sdk/protocol-http': 3.342.0
       '@aws-sdk/signature-v4': 3.342.0
-      '@aws-sdk/signature-v4-crt': 3.342.0(bufferutil@4.0.7)
+      '@aws-sdk/signature-v4-crt': 3.342.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
       '@aws-sdk/types': 3.342.0
       tslib: 2.5.2
     dev: false
@@ -897,7 +900,7 @@ packages:
     dependencies:
       '@aws-sdk/protocol-http': 3.342.0
       '@aws-sdk/signature-v4': 3.342.0
-      '@aws-sdk/signature-v4-crt': 3.342.0(bufferutil@4.0.7)
+      '@aws-sdk/signature-v4-crt': 3.342.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
       '@aws-sdk/types': 3.342.0
       tslib: 2.5.2
     dev: false
@@ -2477,7 +2480,7 @@ packages:
       to-fast-properties: 2.0.0
     dev: false
 
-  /@httptoolkit/websocket-stream@6.0.1(bufferutil@4.0.7):
+  /@httptoolkit/websocket-stream@6.0.1(bufferutil@4.0.7)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-A0NOZI+Glp3Xgcz6Na7i7o09+/+xm2m0UCU8gdtM2nIv6/cjLmhMZMqehSpTlgbx9omtLmV8LVqOskPEyWnmZQ==}
     dependencies:
       '@types/ws': 8.5.4
@@ -2486,7 +2489,7 @@ packages:
       isomorphic-ws: 4.0.1(ws@8.13.0)
       readable-stream: 2.3.8
       safe-buffer: 5.2.1
-      ws: 8.13.0(bufferutil@4.0.7)
+      ws: 8.13.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
       xtend: 4.0.2
     transitivePeerDependencies:
       - bufferutil
@@ -2540,6 +2543,19 @@ packages:
       rimraf: 3.0.2
       semver: 7.5.1
       tar: 6.1.15
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+    dev: false
+
+  /@maxswjeon/canvas@2.11.2-lite(encoding@0.1.13):
+    resolution: {integrity: sha512-sqCU7O1ztqJucHz4TkwZ+XavaKtyjKBjjW59rGzYMrfzYudOGukFCQnClj7OhwuPhXqbsua9HmzfKBjG9bEVXw==}
+    engines: {node: '>=6'}
+    requiresBuild: true
+    dependencies:
+      '@mapbox/node-pre-gyp': 1.0.10(encoding@0.1.13)
+      nan: 2.17.0
+      simple-get: 3.1.1
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -3106,17 +3122,17 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /aws-crt@1.15.17(bufferutil@4.0.7):
+  /aws-crt@1.15.17(bufferutil@4.0.7)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-mOKNeG/DY2dYWVgila7ER8yjarq1u+e5smhnRwABbomgfgm6g+hEtVw221rv+UGtxK31b6pj1DA4DromxNZDIw==}
     requiresBuild: true
     dependencies:
       '@aws-sdk/util-utf8-browser': 3.259.0
-      '@httptoolkit/websocket-stream': 6.0.1(bufferutil@4.0.7)
+      '@httptoolkit/websocket-stream': 6.0.1(bufferutil@4.0.7)(utf-8-validate@5.0.10)
       axios: 0.24.0
       buffer: 6.0.3
       cmake-js: 6.3.2
       crypto-js: 4.1.1
-      mqtt: 4.3.7(bufferutil@4.0.7)
+      mqtt: 4.3.7(bufferutil@4.0.7)(utf-8-validate@5.0.10)
       process: 0.11.10
       tar: 6.1.15
     transitivePeerDependencies:
@@ -3356,6 +3372,7 @@ packages:
       - encoding
       - supports-color
     dev: false
+    optional: true
 
   /chainsaw@0.1.0:
     resolution: {integrity: sha512-75kWfWt6MEKNC8xYXIdRpDehRYY/tNSgwKaJq+dbbDcxORuVrrQ+SEHoWsniVn9XPYfP4gmdWIeDk/4YNp1rNQ==}
@@ -3919,12 +3936,12 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: false
 
-  /fabric@6.0.0-beta7(bufferutil@4.0.7)(encoding@0.1.13):
+  /fabric@6.0.0-beta7(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-1SPn71J3Qp7SU9JbKmizc3xEwrUa7DJVq2qyzYyczd/KjuzM9u9/cW40zlCz+0Mu5uE0vCQ0tUsGkYLsecsXzQ==}
     engines: {node: '>=14.0.0'}
     optionalDependencies:
       canvas: 2.11.2(encoding@0.1.13)
-      jsdom: 20.0.3(bufferutil@4.0.7)(canvas@2.11.2)
+      jsdom: 20.0.3(bufferutil@4.0.7)(canvas@2.11.2)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -4464,7 +4481,7 @@ packages:
     peerDependencies:
       ws: '*'
     dependencies:
-      ws: 8.13.0(bufferutil@4.0.7)
+      ws: 8.13.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
     dev: false
 
   /jiti@1.18.2:
@@ -4491,7 +4508,7 @@ packages:
       argparse: 2.0.1
     dev: false
 
-  /jsdom@20.0.3(bufferutil@4.0.7)(canvas@2.11.2):
+  /jsdom@20.0.3(bufferutil@4.0.7)(canvas@2.11.2)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-SYhBvTh89tTfCD/CRdSOm13mOBa42iTaTyfyEWBdKcGdPxPtLFBXuHR8XHb33YNYaP+lLbmSvBTsnoesCNJEsQ==}
     engines: {node: '>=14'}
     requiresBuild: true
@@ -4526,7 +4543,7 @@ packages:
       whatwg-encoding: 2.0.0
       whatwg-mimetype: 3.0.0
       whatwg-url: 11.0.0
-      ws: 8.13.0(bufferutil@4.0.7)
+      ws: 8.13.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
       xml-name-validator: 4.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -4772,7 +4789,7 @@ packages:
       - supports-color
     dev: false
 
-  /mqtt@4.3.7(bufferutil@4.0.7):
+  /mqtt@4.3.7(bufferutil@4.0.7)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-ew3qwG/TJRorTz47eW46vZ5oBw5MEYbQZVaEji44j5lAUSQSqIEoul7Kua/BatBW0H0kKQcC9kwUHa1qzaWHSw==}
     engines: {node: '>=10.0.0'}
     hasBin: true
@@ -4792,7 +4809,7 @@ packages:
       reinterval: 1.1.0
       rfdc: 1.3.0
       split2: 3.2.2
-      ws: 7.5.9(bufferutil@4.0.7)
+      ws: 7.5.9(bufferutil@4.0.7)(utf-8-validate@5.0.10)
       xtend: 4.0.2
     transitivePeerDependencies:
       - bufferutil
@@ -6059,6 +6076,14 @@ packages:
       serialize-query-params: 2.0.2
     dev: false
 
+  /utf-8-validate@5.0.10:
+    resolution: {integrity: sha512-Z6czzLq4u8fPOyx7TU6X3dvUZVvoJmxSQ+IcrlmagKhilxlhZgxPK6C5Jqbkw1IDUmFTM+cz9QDnnLTwDz/2gQ==}
+    engines: {node: '>=6.14.2'}
+    requiresBuild: true
+    dependencies:
+      node-gyp-build: 4.6.0
+    dev: false
+
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
     dev: false
@@ -6210,7 +6235,7 @@ packages:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
     dev: false
 
-  /ws@7.5.9(bufferutil@4.0.7):
+  /ws@7.5.9(bufferutil@4.0.7)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==}
     engines: {node: '>=8.3.0'}
     peerDependencies:
@@ -6223,9 +6248,10 @@ packages:
         optional: true
     dependencies:
       bufferutil: 4.0.7
+      utf-8-validate: 5.0.10
     dev: false
 
-  /ws@8.13.0(bufferutil@4.0.7):
+  /ws@8.13.0(bufferutil@4.0.7)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
@@ -6238,6 +6264,7 @@ packages:
         optional: true
     dependencies:
       bufferutil: 4.0.7
+      utf-8-validate: 5.0.10
     dev: false
 
   /xml-name-validator@4.0.0:
