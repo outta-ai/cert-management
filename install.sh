@@ -17,9 +17,11 @@ make
 cp libz.so.1.2.9 ../node_modules/@maxswjeon/canvas/build/Release/libz.so.X
 cd ..
 
+echo "Patching libpng16.so.16"
 patchelf --replace-needed /lib64/libz.so.1 libz.so.X ./node_modules/@maxswjeon/canvas/build/Release/libpng16.so.16
 patchelf --replace-needed libz.so.1 libz.so.X ./node_modules/@maxswjeon/canvas/build/Release/libpng16.so.16
 
+echo "Patching libglib-2.0.so.0"
 patchelf --replace-needed /lib64/libz.so.1 libz.so.X ./node_modules/@maxswjeon/canvas/build/Release/libglib-2.0.so.0
 patchelf --replace-needed libz.so.1 libz.so.X ./node_modules/@maxswjeon/canvas/build/Release/libglib-2.0.so.0
 
