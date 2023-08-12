@@ -7,7 +7,7 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import NodeCanvas from "@napi-rs/canvas";
+import * as NodeCanvas from "@napi-rs/canvas";
 import { Certificate, User } from "@prisma/client";
 import { Image, StaticCanvas, Text } from "fabric/node";
 import mime from "mime-types";
