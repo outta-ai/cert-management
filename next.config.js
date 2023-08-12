@@ -28,7 +28,7 @@ const nextConfig = {
     config.externals.push({
       sharp: "commonjs sharp",
       canvas: "commonjs canvas",
-      "@maxswjeon/canvas": "commonjs @maxswjeon/canvas",
+      "@napi-rs/canvas": "commonjs @napi-rs/canvas",
     });
 
     return config;
