@@ -39,6 +39,8 @@ const replaceText = (text: string, user: User, cert: Certificate) => {
 };
 
 export async function POST(req: Request) {
+  console.log("POST /api/certs/[id]/issue");
+
   const session = await getServerSession(authOptions);
 
   if (!session) {
