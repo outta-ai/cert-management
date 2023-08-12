@@ -14,12 +14,12 @@ tar -xf zlib-1.2.9.tar.gz
 cd zlib-1.2.9
 sh configure
 make
-cp libz.so.1.2.9 ../node_modules/canvas/build/Release/libz.so.X
+cp libz.so.1.2.9 ../node_modules/.pnpm/canvas@2.11.2_encoding@0.1.13/node_modules/canvas/build/Release/libz.so.X
 cd ..
 
 echo "Patching libpng16.so.16"
-patchelf --replace-needed /lib64/libz.so.1 libz.so.X ./node_modules/canvas/build/Release/libpng16.so.16
-patchelf --replace-needed libz.so.1 libz.so.X ./node_modules/canvas/build/Release/libpng16.so.16
+patchelf --replace-needed /lib64/libz.so.1 libz.so.X ./node_modules/.pnpm/canvas@2.11.2_encoding@0.1.13/node_modules/canvas/build/Release/libpng16.so.16
+patchelf --replace-needed libz.so.1 libz.so.X ./node_modules/.pnpm/canvas@2.11.2_encoding@0.1.13/node_modules/canvas/build/Release/libpng16.so.16
 
 # echo "Patching libglib-2.0.so.0"
 # patchelf --replace-needed /lib64/libz.so.1 libz.so.X ./node_modules/@maxswjeon/canvas/build/Release/libglib-2.0.so.0
