@@ -7,7 +7,7 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import NodeCanvas from "@napi-rs/canvas";
+import NodeCanvas from "@maxswjeon/canvas";
 import { Certificate, User } from "@prisma/client";
 import { Image, StaticCanvas, Text } from "fabric/node";
 import mime from "mime-types";
@@ -111,9 +111,13 @@ export async function POST(req: Request) {
   }
 
   // Load fonts
-  NodeCanvas.GlobalFonts.registerFromPath(
+  NodeCanvas.registerFont(
     path.resolve(process.cwd(), "data/Pretendard-Regular.otf"),
-    "Pretendard"
+    {
+      family: "Pretendard",
+      weight: "normal",
+      style: "normal",
+    }
   );
 
   try {
