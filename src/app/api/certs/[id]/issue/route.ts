@@ -7,8 +7,8 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import NodeCanvas from "canvas";
 import { Certificate, User } from "@prisma/client";
+import NodeCanvas from "canvas";
 import { Image, StaticCanvas, Text } from "fabric/node";
 import mime from "mime-types";
 import { getServerSession } from "next-auth";
@@ -35,7 +35,7 @@ const replaceText = (text: string, user: User, cert: Certificate) => {
   return text
     .replace("{{Name}}", user.name)
     .replace("{{IssueDate}}", cert.issuedAt.toLocaleDateString("ko-KR"))
-    .replace("{{PrintDate}", new Date().toLocaleDateString("ko-KR"));
+    .replace("{{PrintDate}}", new Date().toLocaleDateString("ko-KR"));
 };
 
 export async function POST(req: Request) {
