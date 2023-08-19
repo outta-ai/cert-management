@@ -219,10 +219,10 @@ export async function POST(req: Request) {
 
       // New Center => Original Center Difference
       // x: (newWidth - referenceWidth) / 2
-      // y; (newHeight - referenceHeight) / 2
+      // y: (newHeight - referenceHeight) / 2
 
-      textObject.set("top", text.top + (newWidth - referenceWidth) / 2);
-      textObject.set("left", text.left + (newHeight - referenceHeight) / 2);
+      textObject.set("top", text.top + (newHeight - referenceHeight) / 2);
+      textObject.set("left", text.left + (newWidth - referenceWidth) / 2);
 
       canvas.add(textObject);
     });
