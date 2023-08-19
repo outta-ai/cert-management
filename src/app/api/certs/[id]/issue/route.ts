@@ -228,8 +228,15 @@ export async function POST(req: Request) {
   });
 
   content.rects.forEach(async (rect) => {
-    doc.image(qrcodeString, rect.left - rect.width, rect.top - rect.height, {
-      fit: [rect.width, rect.height],
+    const [x, y] = toDocCoordinates(rect.left, rect.top, content.orientation);
+    const [w, h] = toDocCoordinates(
+      rect.width,
+      rect.height,
+      content.orientation
+    );
+
+    doc.image(qrcodeString, x, y, {
+      fit: [w, h],
     });
   });
 
