@@ -186,6 +186,15 @@ export async function POST(req: Request) {
     );
 
     content.texts.forEach((text) => {
+      const referenceText = new Text(text.data, {
+        scaleX: text.scale,
+        scaleY: text.scale,
+        fontFamily: "ChosunGs",
+      });
+
+      const referenceWidth = referenceText.width;
+      const referenceHeight = referenceText.height;
+
       const data = replaceText(text.data, user, cert);
 
       const textObject = new Text(data, {
@@ -196,6 +205,25 @@ export async function POST(req: Request) {
         fontFamily: "ChosunGs",
         textAlign: "center",
       });
+
+      const newWidth = textObject.width;
+      const newHeight = textObject.height;
+
+      // Original Center of the Text
+      // x: left + (referenceWidth / 2)
+      // y: height + (referenceHeight / 2)
+
+      // New Center of the Text
+      // x: left + (newWidth / 2)
+      // y: height + (newHeight / 2)
+
+      // New Center => Original Center Difference
+      // x: (newWidth - referenceWidth) / 2
+      // y; (newHeight - referenceHeight) / 2
+
+      textObject.set("top", text.top + (newWidth - referenceWidth) / 2);
+      textObject.set("left", text.left + (newHeight - referenceHeight) / 2);
+
       canvas.add(textObject);
     });
 
