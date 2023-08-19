@@ -258,7 +258,8 @@ export async function POST(req: Request) {
   doc.image(result, 0, 0, {
     align: "center",
     valign: "center",
-    fit: [595.28, 841.89],
+    fit:
+      content.orientation === "landscape" ? [595.28, 841.89] : [841.89, 595.28],
   });
   doc.pipe(pdfStream);
   doc.end();
