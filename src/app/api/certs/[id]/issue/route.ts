@@ -189,7 +189,7 @@ export async function POST(req: Request) {
       const referenceText = new Text(text.data, {
         scaleX: text.scale,
         scaleY: text.scale,
-        fontFamily: "ChosunGs",
+        // Reference Text is not ChosunGs
       });
 
       const referenceWidth = referenceText.width;
