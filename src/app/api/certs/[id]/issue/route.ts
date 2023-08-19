@@ -109,14 +109,11 @@ export async function POST(req: Request) {
   }
 
   // Load fonts
-  NodeCanvas.registerFont(
-    path.resolve(process.cwd(), "data/Pretendard-Regular.otf"),
-    {
-      family: "Pretendard",
-      weight: "normal",
-      style: "normal",
-    }
-  );
+  NodeCanvas.registerFont(path.resolve(process.cwd(), "data/ChosunGs.ttf"), {
+    family: "ChosunGs",
+    weight: "normal",
+    style: "normal",
+  });
 
   try {
     await fs.mkdir(path.join(__dirname, "data"));
@@ -196,7 +193,8 @@ export async function POST(req: Request) {
         scaleY: text.scale,
         top: text.top,
         left: text.left,
-        fontFamily: "Pretendard",
+        fontFamily: "ChosunGs",
+        textAlign: "center",
       });
       canvas.add(textObject);
     });
@@ -230,6 +228,10 @@ export async function POST(req: Request) {
       },
     });
   }
+
+  console.log(
+    `Image ${content.image.width}x${content.image.height} at (${content.image.top}, ${content.image.left}) of Frame ${canvasWidth}x${canvasHeight}`
+  );
 
   image.set("width", content.image.width);
   image.set("height", content.image.height);
