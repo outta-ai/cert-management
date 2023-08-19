@@ -74,6 +74,12 @@ export async function DELETE(req: Request) {
     });
   }
 
+  await prisma.certificateLog.deleteMany({
+    where: {
+      certificateId: id,
+    },
+  });
+
   await prisma.certificate.delete({
     where: {
       id,

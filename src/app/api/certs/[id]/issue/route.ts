@@ -229,10 +229,6 @@ export async function POST(req: Request) {
     });
   }
 
-  console.log(
-    `Image ${content.image.width}x${content.image.height} at (${content.image.top}, ${content.image.left}) of Frame ${canvasWidth}x${canvasHeight}`
-  );
-
   image.set("width", content.image.width);
   image.set("height", content.image.height);
   image.set("top", content.image.top);
@@ -259,7 +255,7 @@ export async function POST(req: Request) {
     align: "center",
     valign: "center",
     fit:
-      content.orientation === "landscape" ? [595.28, 841.89] : [841.89, 595.28],
+      content.orientation === "landscape" ? [841.89, 595.28] : [595.28, 841.89],
   });
   doc.pipe(pdfStream);
   doc.end();
