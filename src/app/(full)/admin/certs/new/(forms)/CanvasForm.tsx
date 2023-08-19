@@ -141,7 +141,7 @@ export default function CanvasForm({
 
   const addText = useCallback(() => {
     const text = new Text("여기에 텍스트 입력", {
-      fontFamily: "Pretendard Variable",
+      fontFamily: "ChosunGs",
     });
 
     text.lockScalingFlip = true;
