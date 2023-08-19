@@ -1,25 +1,23 @@
 import fs from "fs/promises";
-import { PassThrough } from "stream";
 
 import {
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Certificate, User } from "@prisma/client";
-import NodeCanvas from "canvas";
-import { Image, StaticCanvas, Text } from "fabric/node";
 import mime from "mime-types";
 import { getServerSession } from "next-auth";
 import PDFDocument from "pdfkit";
 import QRcode from "qrcode";
 import validator from "validator";
 
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import authOptions from "lib/auth";
 import { prisma } from "lib/prisma";
 import ResponseDTO from "lib/response";
 import path from "path";
+import { PassThrough } from "stream";
 import { CertContent } from "types/content";
 
 const s3 = new S3Client({
@@ -36,6 +34,16 @@ const replaceText = (text: string, user: User, cert: Certificate) => {
     .replace("{{Name}}", user.name)
     .replace("{{IssueDate}}", cert.issuedAt.toLocaleDateString("ko-KR"))
     .replace("{{PrintDate}}", new Date().toLocaleDateString("ko-KR"));
+};
+
+const toDocCoordinates = (x: number, y: number, orientation: string) => {
+  if (orientation === "landscape") {
+    // 1024 x 720 => 841.89 x 595.28
+    return [(x * 841.89) / 1024, (y * 595.28) / 720];
+  } else {
+    // 720 x 1024 => 595.28 x 841.89
+    return [(x * 595.28) / 720, (y * 841.89) / 1024];
+  }
 };
 
 export async function POST(req: Request) {
@@ -108,13 +116,6 @@ export async function POST(req: Request) {
     });
   }
 
-  // Load fonts
-  NodeCanvas.registerFont(path.resolve(process.cwd(), "data/ChosunGs.ttf"), {
-    family: "ChosunGs",
-    weight: "normal",
-    style: "normal",
-  });
-
   try {
     await fs.mkdir(path.join(__dirname, "data"));
   } catch {}
@@ -150,25 +151,16 @@ export async function POST(req: Request) {
 
   const content = JSON.parse(cert.content) as CertContent;
 
-  const canvasWidth =
-    (content.orientation === "landscape" ? 1024 : 720) *
-    Number(process.env.CERT_DPI);
-  const canvasHeight =
-    (content.orientation === "landscape" ? 720 : 1024) *
-    Number(process.env.CERT_DPI);
-
-  // @ts-expect-error Wrongly typed? Should be cheked with Fabric Devs
-  const canvas = new StaticCanvas(null, {
-    width: canvasWidth,
-    height: canvasHeight,
-  });
-
   const imageCommand = new GetObjectCommand({
     Bucket: process.env.AWS_S3_BUCKET_NAME,
     Key: `certs/images/${content.image.data}`,
   });
 
-  let image: Image | null = null;
+  const doc = new PDFDocument({
+    size: "A4",
+    layout: content.orientation,
+  });
+
   try {
     const imageResponse = await s3.send(imageCommand);
 
@@ -181,75 +173,22 @@ export async function POST(req: Request) {
         },
       });
     }
-
-    const qrcodeString = await QRcode.toDataURL(
-      `${process.env.BASE_URL}/validate/${certLog.id}`,
-      {
-        width: 512,
-      }
-    );
-
-    content.texts.forEach((text) => {
-      const referenceText = new Text(text.data, {
-        scaleX: text.scale,
-        scaleY: text.scale,
-        fontFamily: "ChosunGs",
-      });
-
-      const referenceWidth = referenceText.width;
-      const referenceHeight = referenceText.height;
-
-      const data = replaceText(text.data, user, cert);
-
-      const textObject = new Text(data, {
-        scaleX: text.scale,
-        scaleY: text.scale,
-        top: text.top,
-        left: text.left,
-        fontFamily: "ChosunGs",
-        textAlign: "center",
-      });
-
-      const newWidth = textObject.width;
-      const newHeight = textObject.height;
-
-      // Original Center of the Text
-      // x: left + (referenceWidth / 2)
-      // y: height + (referenceHeight / 2)
-
-      // New Center of the Text
-      // x: left + (newWidth / 2)
-      // y: height + (newHeight / 2)
-
-      // New Center => Original Center Difference
-      // x: (newWidth - referenceWidth) / 2
-      // y: (newHeight - referenceHeight) / 2
-
-      textObject.set("top", text.top + (referenceHeight - newHeight) / 2);
-      textObject.set("left", text.left + (referenceWidth - newWidth) / 2);
-
-      canvas.add(textObject);
-    });
-
-    content.rects.forEach(async (rect) => {
-      const qrCode = await Image.fromURL(qrcodeString, {
-        width: 512,
-        height: 512,
-        top: rect.top,
-        left: rect.left,
-        scaleX: rect.width / 512,
-        scaleY: rect.height / 512,
-      });
-      canvas.add(qrCode);
-    });
-
     const imageBuffer = Buffer.from(
       await imageResponse.Body.transformToByteArray()
     );
+
     const imageURL = `data:${mime.contentType(
       content.image.data
     )};base64,${imageBuffer.toString("base64")}`;
-    image = await Image.fromURL(imageURL);
+
+    doc.image(imageURL, 0, 0, {
+      align: "center",
+      valign: "center",
+      fit:
+        content.orientation === "landscape"
+          ? [841.89, 595.28]
+          : [595.28, 841.89],
+    });
   } catch (e) {
     console.log(e);
     return ResponseDTO.status(500).json({
@@ -261,14 +200,38 @@ export async function POST(req: Request) {
     });
   }
 
-  image.set("width", content.image.width);
-  image.set("height", content.image.height);
-  image.set("top", content.image.top);
-  image.set("left", content.image.left);
-  canvas.add(image);
-  canvas.sendObjectToBack(image);
+  const qrcodeString = await QRcode.toDataURL(
+    `${process.env.BASE_URL}/validate/${certLog.id}`,
+    {
+      width: 512,
+    }
+  );
 
-  const result = canvas.toDataURL();
+  content.texts.forEach((text) => {
+    const data = replaceText(text.data, user, cert);
+
+    const [x, y] = toDocCoordinates(text.left, text.top, content.orientation);
+    const [w, h] = toDocCoordinates(
+      text.width,
+      text.height,
+      content.orientation
+    );
+
+    doc
+      .font("data/ChosunGs.ttf", h)
+      .text(data, x, y, {
+        align: "center",
+        width: w,
+        height: h,
+      })
+      .rect(x, y, w, h);
+  });
+
+  content.rects.forEach(async (rect) => {
+    doc.image(qrcodeString, rect.left - rect.width, rect.top - rect.height, {
+      fit: [rect.width, rect.height],
+    });
+  });
 
   const pdfStream = new PassThrough();
 
@@ -279,16 +242,6 @@ export async function POST(req: Request) {
     pdfStream.on("error", reject);
   });
 
-  const doc = new PDFDocument({
-    size: "A4",
-    layout: content.orientation,
-  });
-  doc.image(result, 0, 0, {
-    align: "center",
-    valign: "center",
-    fit:
-      content.orientation === "landscape" ? [841.89, 595.28] : [595.28, 841.89],
-  });
   doc.pipe(pdfStream);
   doc.end();
 

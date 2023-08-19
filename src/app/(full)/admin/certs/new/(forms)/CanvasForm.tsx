@@ -6,6 +6,7 @@ import { Canvas, Object as FabricObject, Image, Rect, Text } from "fabric";
 
 import debounceFabric from "lib/debounceFabric";
 
+import IconCenter from "assets/icons/icon_align_center.svg";
 import IconHorizontal from "assets/icons/icon_horizontal.svg";
 import IconQrCode from "assets/icons/icon_qrcode.svg";
 import IconText from "assets/icons/icon_text.svg";
@@ -47,21 +48,22 @@ export default function CanvasForm({
 }: Props) {
   const [top, setTop] = useState(0);
   const [left, setLeft] = useState(0);
-  const [sclae, setScale] = useState(0);
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
   const [value, setValue] = useState("");
 
   debounceFabric(fabricRef, "top", top, setTop);
   debounceFabric(fabricRef, "left", left, setLeft);
-  debounceFabric(fabricRef, "scaleX", sclae, setScale);
-  debounceFabric(fabricRef, "scaleY", sclae, setScale);
+  debounceFabric(fabricRef, "width", width, setWidth);
+  debounceFabric(fabricRef, "height", height, setHeight);
   debounceFabric(fabricRef, "text", value, setValue);
 
   const [selectedInfo, setSelectedInfo] = useState("선택된 요소가 없습니다.");
 
-  useEffect(() => {
-    const canvasWidth = orientation === "landscape" ? 1024 : 720;
-    const canvasHeight = orientation === "landscape" ? 720 : 1024;
+  const canvasWidth = orientation === "landscape" ? 1024 : 720;
+  const canvasHeight = orientation === "landscape" ? 720 : 1024;
 
+  useEffect(() => {
     const canvas = new Canvas("canvas-main", {
       width: canvasWidth,
       height: canvasHeight,
@@ -97,7 +99,8 @@ export default function CanvasForm({
       setSelectedInfo(selected instanceof Text ? "텍스트" : "QR 코드");
       setTop(selected.top);
       setLeft(selected.left);
-      setScale(selected.scaleX);
+      setWidth(selected.width);
+      setHeight(selected.height);
 
       if (selected instanceof Text) {
         setValue(selected.text);
@@ -142,10 +145,13 @@ export default function CanvasForm({
   const addText = useCallback(() => {
     const text = new Text("여기에 텍스트 입력", {
       fontFamily: "ChosunGs",
+      textAlign: "center",
     });
 
     text.lockScalingFlip = true;
     text.lockRotation = true;
+    text.lockScalingX = true;
+    text.lockScalingY = true;
 
     fabricRef.current?.add(text);
     fabricRef.current?.bringObjectToFront(text);
@@ -229,8 +235,17 @@ export default function CanvasForm({
           {["텍스트", "QR 코드"].includes(selectedInfo) && (
             <>
               <div className="mt-3">
-                <p className="font-semibold">좌표</p>
-                <div className="flex w-full items-center">
+                <div className="flex justify-between items-center">
+                  <p className="font-semibold">좌표</p>
+                  <button
+                    type="button"
+                    className="rounded-l-md bg-gray-200 hover:bg-gray-300 p-2"
+                    onClick={() => setLeft(canvasWidth / 2 - width / 2)}
+                  >
+                    <IconCenter className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="mt-3 flex w-full items-center">
                   <p className="mx-3 w-6">X :</p>
                   <input
                     className="border border-gray-300 rounded-md p-1 flex-1"
@@ -252,12 +267,21 @@ export default function CanvasForm({
               <div className="mt-3">
                 <p className="font-semibold">크기</p>
                 <div className="flex w-full items-center">
-                  <p className="mx-3 w-6">S :</p>
+                  <p className="mx-3 w-6">W :</p>
                   <input
                     className="border border-gray-300 rounded-md p-1 flex-1"
                     type="number"
-                    value={sclae}
-                    onChange={(e) => setScale(Number(e.currentTarget.value))}
+                    value={width}
+                    onChange={(e) => setWidth(Number(e.currentTarget.value))}
+                  />
+                </div>
+                <div className="flex w-full items-center">
+                  <p className="mx-3 w-6">H :</p>
+                  <input
+                    className="border border-gray-300 rounded-md p-1 flex-1"
+                    type="number"
+                    value={height}
+                    onChange={(e) => setHeight(Number(e.currentTarget.value))}
                   />
                 </div>
               </div>

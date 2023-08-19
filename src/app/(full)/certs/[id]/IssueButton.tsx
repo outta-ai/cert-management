@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type Props = {
@@ -8,8 +7,6 @@ type Props = {
 };
 
 export default function IssueButton({ certId }: Props) {
-  const router = useRouter();
-
   const [loading, setLoading] = useState(false);
 
   const issueCert = async () => {

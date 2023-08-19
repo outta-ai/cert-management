@@ -71,6 +71,8 @@ export default function Form({ users }: Props) {
           scale: text.scaleX,
           left: text.left,
           top: text.top,
+          width: text.getScaledWidth(),
+          height: text.getScaledHeight(),
         };
       }),
       rects: rects.map((rect) => {

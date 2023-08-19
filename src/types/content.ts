@@ -11,6 +11,8 @@ export type CertContent = {
     scale: number;
     left: number;
     top: number;
+    width: number;
+    height: number;
   }[];
   rects: {
     width: number;

@@ -4,7 +4,6 @@ import { withAuth } from "lib/auth";
 import { prisma } from "lib/prisma";
 
 import Header from "app/(full)/Header";
-import CertPreview from "components/CertPreview";
 import IssueButton from "./IssueButton";
 
 import IconChevronLeft from "assets/icons/icon_chevron-left.svg";
@@ -46,10 +45,9 @@ export default async function Cert({ params: { id } }: Props) {
         <IssueButton certId={id} />
       </div>
       <div className="mt-3 px-6">
-        <h3 className="font-semibold">증명서 미리보기</h3>
-        <div className="w-full max-w-sm">
-          <CertPreview content={cert.content} />
-        </div>
+        <p>
+          <b>증명서 발급일자:</b> {cert.issuedAt.toLocaleDateString("ko-KR")}
+        </p>
       </div>
     </main>
   );

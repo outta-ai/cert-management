@@ -51,7 +51,7 @@ export default function CertPreview({ content }: Props) {
         scaleY: text.scale,
         left: text.left,
         top: text.top,
-        fontFamily: "Pretended Variable",
+        fontFamily: "ChosunGs",
       });
       canvas.add(textObject);
     });
