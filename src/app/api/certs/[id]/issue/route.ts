@@ -150,10 +150,12 @@ export async function POST(req: Request) {
 
   const content = JSON.parse(cert.content) as CertContent;
 
-  const dpi = 36;
-
-  const canvasWidth = (content.orientation === "landscape" ? 1024 : 720) * dpi;
-  const canvasHeight = (content.orientation === "landscape" ? 720 : 1024) * dpi;
+  const canvasWidth =
+    (content.orientation === "landscape" ? 1024 : 720) *
+    Number(process.env.CERT_DPI);
+  const canvasHeight =
+    (content.orientation === "landscape" ? 720 : 1024) *
+    Number(process.env.CERT_DPI);
 
   // @ts-expect-error Wrongly typed? Should be cheked with Fabric Devs
   const canvas = new StaticCanvas(null, {

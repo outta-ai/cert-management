@@ -59,10 +59,8 @@ export default function CanvasForm({
   const [selectedInfo, setSelectedInfo] = useState("선택된 요소가 없습니다.");
 
   useEffect(() => {
-    const dpi = 36;
-
-    const canvasWidth = (orientation === "landscape" ? 1024 : 720) * dpi;
-    const canvasHeight = (orientation === "landscape" ? 720 : 1024) * dpi;
+    const canvasWidth = orientation === "landscape" ? 1024 : 720;
+    const canvasHeight = orientation === "landscape" ? 720 : 1024;
 
     const canvas = new Canvas("canvas-main", {
       width: canvasWidth,
