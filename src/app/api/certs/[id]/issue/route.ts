@@ -221,8 +221,8 @@ export async function POST(req: Request) {
       // x: (newWidth - referenceWidth) / 2
       // y: (newHeight - referenceHeight) / 2
 
-      textObject.set("top", text.top + (newHeight - referenceHeight) / 2);
-      textObject.set("left", text.left + (newWidth - referenceWidth) / 2);
+      textObject.set("top", text.top + (referenceHeight - newHeight) / 2);
+      textObject.set("left", text.left + (referenceWidth - newWidth) / 2);
 
       canvas.add(textObject);
     });
