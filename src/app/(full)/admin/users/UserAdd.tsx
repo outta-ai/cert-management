@@ -1,9 +1,11 @@
 "use client";
 
+import { useContext } from "react";
+
+import { DialogContext } from "./Providers";
+
 import IconFilePlus from "assets/icons/icon_file-plus.svg";
 import IconPlus from "assets/icons/icon_plus.svg";
-import { useContext } from "react";
-import { DialogContext } from "./Providers";
 
 export default function UserAdd() {
   const { openUserAddDialog, openUserFileAddDialog } =

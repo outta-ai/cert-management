@@ -10,10 +10,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserType {
-  Admin
-  Member
-  User
+model Group {
+  id   String @id @default(uuid()) @db.Uuid
+  name String @unique
+
+  User User[]
 }
 
 model User {
@@ -22,7 +23,7 @@ model User {
   email    String           @unique
   name     String
   memo     String           @default("")
-  type     UserType
+  groups   Group[]
   logs     CertificateLog[]
 
   @@index(googleId)
@@ -30,13 +31,14 @@ model User {
 }
 
 model Certificate {
-  id        String           @id @default(uuid()) @db.Uuid
-  name      String
-  content   String
-  issuedAt  DateTime
-  expiresAt DateTime?
-  userIds   String[]         @db.Uuid
-  logs      CertificateLog[]
+  id          String           @id @default(uuid()) @db.Uuid
+  name        String
+  description String           @default("")
+  content     String
+  issuedAt    DateTime
+  expiresAt   DateTime?
+  userIds     String[]         @db.Uuid
+  logs        CertificateLog[]
 }
 
 model CertificateLog {

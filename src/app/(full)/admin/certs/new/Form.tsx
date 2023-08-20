@@ -27,6 +27,7 @@ export default function Form({ users }: Props) {
 
   const [name, setName] = useState("");
   const [issueDate, setIssueDate] = useState("");
+  const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
 
   const canvasState = {
@@ -91,6 +92,7 @@ export default function Form({ users }: Props) {
       body: JSON.stringify({
         content,
         name,
+        description,
         issuedAt: issueDate,
         users: selectedUsers.map((user) => user.id),
       }),
@@ -135,6 +137,17 @@ export default function Form({ users }: Props) {
             value={issueDate}
             onChange={(e) => setIssueDate(e.target.value)}
             placeholder="증명서 발급일자"
+          />
+        </div>
+        <div className="mt-3">
+          <p className="font-semibold text-gray-600">
+            증명서 발급일자<span className="text-red-500">*</span>
+          </p>
+          <textarea
+            className="w-full rounded-md p-2 border border-gray-300 focus:outline-none"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="증명서 설명"
           />
         </div>
       </div>

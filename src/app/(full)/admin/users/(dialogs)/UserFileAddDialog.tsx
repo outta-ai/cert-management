@@ -1,10 +1,10 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import { User } from "@prisma/client";
+import { Group, User } from "@prisma/client";
 
 import IconFile from "assets/icons/icon_file.svg";
 
@@ -13,60 +13,7 @@ type DialogProps = {
   onClose: () => void;
 };
 
-const handleCSV = async (file: File) => {
-  const headerMap = {
-    이름: "name",
-    이메일: "email",
-    "Google ID": "googleId",
-    유형: "type",
-    타입: "type",
-    메모: "memo",
-  };
-
-  const content = await file.text();
-
-  const lines = content.replaceAll("\r\n", "\n").split("\n");
-
-  const headers = lines[0].split(",");
-  const hasHeader = headers.some((header) => header in headerMap);
-
-  if (
-    hasHeader &&
-    !["이름", "이메일", "타입"].every((must) => headers.includes(must))
-  ) {
-    throw new Error("올바른 CSV 파일이 아닙니다.");
-  } else if (!hasHeader && headers.length < 3) {
-    throw new Error("올바른 CSV 파일이 아닙니다.");
-  }
-
-  const users = lines.slice(hasHeader ? 1 : 0).map((line) => {
-    const values = line.split(",");
-
-    const user: Partial<User> = {};
-
-    headers.forEach((header, i) => {
-      const mappedHeader = headerMap[header as keyof typeof headerMap];
-
-      if (mappedHeader === "type") {
-        if (!["User", "Member", "Admin"].includes(values[i].trim())) {
-          throw new Error("올바른 CSV 파일이 아닙니다.");
-        } else {
-          user[mappedHeader] = values[i].trim() as User["type"];
-        }
-      } else if (mappedHeader === "googleId") {
-        user[mappedHeader] = values[i].trim() ? values[i] : null;
-      } else {
-        user[mappedHeader as keyof Omit<User, "type">] = values[i].trim();
-      }
-    });
-
-    return user as User;
-  });
-
-  return users;
-};
-
-type UserResult = User & { result: boolean };
+type UserResult = Partial<User & { groups: Group[] }> & { result: boolean };
 
 export default function UserFileAddDialog({ open, onClose }: DialogProps) {
   const router = useRouter();
@@ -74,59 +21,29 @@ export default function UserFileAddDialog({ open, onClose }: DialogProps) {
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<Partial<User & { groups: Group[] }>[]>([]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<UserResult[]>([]);
   const [error, setError] = useState<string>("");
 
-  useEffect(() => {
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
     if (!file) {
       return;
     }
 
     setLoading(true);
-    try {
-      handleCSV(file).then((users) => {
-        setUsers(users);
 
-        console.log(users);
-      });
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        setError(e.message);
-      } else {
-        setError("파일 처리 중 오류가 발생했습니다.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [file]);
+    const content = await file.text();
 
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+    const result = await fetch("/api/users/file", {
+      method: "POST",
+      credentials: "include",
+      body: content,
+    });
 
-    if (!users.length) {
-      return;
-    }
-
-    setLoading(true);
-
-    const result = await Promise.allSettled(
-      users.map((user) => {
-        fetch("/api/users", {
-          method: "POST",
-          credentials: "include",
-          body: JSON.stringify(user),
-        });
-      })
-    );
-
-    setResult(
-      result.map((r, i) => ({
-        ...users[i],
-        result: r.status === "fulfilled",
-      }))
-    );
+    setResult((await result.json()).data);
     setLoading(false);
   };
 
@@ -216,7 +133,7 @@ export default function UserFileAddDialog({ open, onClose }: DialogProps) {
           {result.length === 0 && (
             <button
               type="submit"
-              disabled={loading || !users.length}
+              disabled={loading || !file}
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50"
             >
               추가

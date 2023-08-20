@@ -13,7 +13,7 @@ import IconPlus from "assets/icons/icon_plus.svg";
 export default async function AdminCertPage() {
   const user = await withAuth();
 
-  if (!user || user.type !== "Admin") {
+  if (!user || !user.groups.find((g) => g.name === "Admin")) {
     redirect(process.env.BASE_URL);
   }
 

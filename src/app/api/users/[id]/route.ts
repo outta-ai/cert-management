@@ -1,3 +1,4 @@
+import { Group } from "@prisma/client";
 import authOptions from "lib/auth";
 
 import { prisma } from "lib/prisma";
@@ -19,11 +20,14 @@ export async function POST(req: Request) {
 
   const user = await prisma.user.findUnique({
     where: {
-      googleId: session.user.id,
+      id: session.user.id,
+    },
+    include: {
+      groups: true,
     },
   });
 
-  if (!user || user.type !== "Admin") {
+  if (!user || !user.groups.find((g) => g.name === "Admin")) {
     return ResponseDTO.status(403).json({
       result: false,
       error: {
@@ -35,17 +39,7 @@ export async function POST(req: Request) {
 
   const userId = req.url.split("/").pop();
 
-  const { memo, type } = await req.json();
-
-  if (!["User", "Member", "Admin"].includes(type)) {
-    return ResponseDTO.status(400).json({
-      result: false,
-      error: {
-        title: "Bad Request",
-        message: "Invalid request body",
-      },
-    });
-  }
+  const { memo, groups } = await req.json();
 
   const targetUser = await prisma.user.findUnique({
     where: {
@@ -69,7 +63,17 @@ export async function POST(req: Request) {
     },
     data: {
       memo,
-      type,
+    },
+  });
+
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      groups: {
+        set: groups.map((g: Group) => ({ id: g.id })),
+      },
     },
   });
 
@@ -93,11 +97,14 @@ export async function DELETE(req: Request) {
 
   const user = await prisma.user.findUnique({
     where: {
-      googleId: session.user.id,
+      id: session.user.id,
+    },
+    include: {
+      groups: true,
     },
   });
 
-  if (!user || user.type !== "Admin") {
+  if (!user || !user.groups.find((g) => g.name === "Admin")) {
     return ResponseDTO.status(403).json({
       result: false,
       error: {

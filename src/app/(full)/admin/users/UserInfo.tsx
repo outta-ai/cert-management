@@ -2,21 +2,23 @@
 
 import { useState } from "react";
 
-import { User } from "@prisma/client";
-
-import { StringParam, useQueryParam } from "use-query-params";
+import { Group, User } from "@prisma/client";
 
 import IconClose from "assets/icons/icon_close.svg";
+import { StringParam, useQueryParam } from "use-query-params";
 
 type ContentProps = {
-  user: User;
+  user: User & {
+    groups: Group[];
+  };
+  groups: Group[];
   onlyAdmin: boolean;
   onClose: () => void;
 };
 
-function UserInfoContent({ user, onlyAdmin, onClose }: ContentProps) {
+function UserInfoContent({ user, groups, onlyAdmin, onClose }: ContentProps) {
   const [memo, setMemo] = useState(user.memo);
-  const [type, setType] = useState<User["type"]>(user.type);
+  const [userGroups, setUserGroups] = useState(user.groups);
 
   const [loading, setLoading] = useState(false);
 
@@ -40,7 +42,7 @@ function UserInfoContent({ user, onlyAdmin, onClose }: ContentProps) {
       credentials: "include",
       body: JSON.stringify({
         memo,
-        type,
+        groups: userGroups,
       }),
     });
 
@@ -53,6 +55,7 @@ function UserInfoContent({ user, onlyAdmin, onClose }: ContentProps) {
         <IconClose className="w-6 h-6 cursor-pointer mr-3" onClick={onClose} />
         <p className="text-2xl font-bold">{user.name}</p>
       </div>
+      <div className="mt-3" />
       <div className="mt-3">
         <p className="font-semibold">Google ID</p>
         <p className="text-gray-800 overflow-hidden text-ellipsis">
@@ -64,16 +67,50 @@ function UserInfoContent({ user, onlyAdmin, onClose }: ContentProps) {
         <p className="text-gray-800">{user.email}</p>
       </div>
       <div className="mt-3">
-        <p className="font-semibold">유저 타입</p>
-        <select
-          className="p-3 border border-gray-300 rounded-md"
-          value={type}
-          onChange={(e) => setType(e.currentTarget.value as User["type"])}
-        >
-          <option value="User">부트캠프 참가자</option>
-          <option value="Member">부원</option>
-          <option value="Admin">관리자</option>
-        </select>
+        <p className="font-semibold">유저 그룹</p>
+        <div className="flex">
+          <div className="flex-1">
+            <p className="font-medium">그룹 리스트</p>
+            {groups
+              .filter((g) => !userGroups.map((g) => g.id).includes(g.id))
+              .map((group) => (
+                <p
+                  key={group.id}
+                  className="text-gray-800 p-2 border border-gray-200 cursor-pointer"
+                  onClick={() => setUserGroups([...userGroups, group])}
+                  onKeyDown={() => setUserGroups([...userGroups, group])}
+                >
+                  {group.name}
+                </p>
+              ))}
+          </div>
+          <div className="w-6" />
+          <div className="flex-1">
+            <p className="font-medium">유저 그룹 리스트</p>
+            {userGroups.map((group) => (
+              <p
+                key={group.id}
+                className={`text-gray-800  p-2 border border-gray-200 ${
+                  onlyAdmin && group.name === "Admin"
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer"
+                }`}
+                onClick={() =>
+                  onlyAdmin && group.name === "Admin"
+                    ? undefined
+                    : setUserGroups(userGroups.filter((g) => g !== group))
+                }
+                onKeyDown={() =>
+                  onlyAdmin && group.name === "Admin"
+                    ? undefined
+                    : setUserGroups(userGroups.filter((g) => g !== group))
+                }
+              >
+                {group.name}
+              </p>
+            ))}
+          </div>
+        </div>
       </div>
       <div className="mt-3">
         <p className="font-semibold">메모</p>
@@ -88,7 +125,10 @@ function UserInfoContent({ user, onlyAdmin, onClose }: ContentProps) {
         <button
           type="button"
           className="px-4 py-2 bg-red-500 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={(user.type === "Admin" && onlyAdmin) || loading}
+          disabled={
+            (user.groups.find((g) => g.name === "Admin") && onlyAdmin) ||
+            loading
+          }
           onClick={onDelete}
         >
           삭제
@@ -97,7 +137,9 @@ function UserInfoContent({ user, onlyAdmin, onClose }: ContentProps) {
         <button
           type="button"
           className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={(memo === user.memo && type === user.type) || loading}
+          disabled={
+            (memo === user.memo && userGroups === user.groups) || loading
+          }
           onClick={onSubmit}
         >
           수정
@@ -108,10 +150,13 @@ function UserInfoContent({ user, onlyAdmin, onClose }: ContentProps) {
 }
 
 type Props = {
-  users: User[];
+  users: (User & {
+    groups: Group[];
+  })[];
+  groups: Group[];
 };
 
-export default function UserInfo({ users }: Props) {
+export default function UserInfo({ users, groups }: Props) {
   const [userId, setUserId] = useQueryParam("user", StringParam);
 
   if (!userId || !userId.trim()) {
@@ -123,7 +168,9 @@ export default function UserInfo({ users }: Props) {
     return null;
   }
 
-  const onlyAdmin = users.filter((user) => user.type === "Admin").length === 1;
+  const onlyAdmin =
+    users.filter((user) => user.groups.find((g) => g.name === "Admin"))
+      .length === 1;
 
   return (
     <div
@@ -138,6 +185,7 @@ export default function UserInfo({ users }: Props) {
       >
         <UserInfoContent
           user={user}
+          groups={groups}
           onlyAdmin={onlyAdmin}
           onClose={() => setUserId(undefined)}
         />

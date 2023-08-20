@@ -16,7 +16,7 @@ export default async function Home() {
 
   return (
     <main className="container mx-auto">
-      <Header isAdmin={user.type === "Admin"} />
+      <Header isAdmin={!!user.groups.find((g) => g.name === "Admin")} />
       <section className="mt-6 p-6">
         <h2 className="text-2xl font-semibold">발급 가능한 증명서</h2>
         <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6">

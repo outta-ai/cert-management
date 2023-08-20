@@ -21,13 +21,27 @@ const authOptions = {
           process.env.DEFAULT_ADMIN_EMAIL &&
           googleProfile.email === process.env.DEFAULT_ADMIN_EMAIL
         ) {
+          let adminGroup = await prisma.group.findUnique({
+            where: { name: "Admin" },
+          });
+
+          if (!adminGroup) {
+            adminGroup = await prisma.group.create({
+              data: {
+                name: "Admin",
+              },
+            });
+          }
+
           await prisma.user.create({
             data: {
               name: googleProfile.name,
               email: googleProfile.email,
               googleId,
-              type: "Admin",
               memo: "Default admin user",
+              groups: {
+                connect: adminGroup,
+              },
             },
           });
 
@@ -108,6 +122,9 @@ export async function withAuth(allowUnregistered = false) {
   const user = await prisma.user.findUnique({
     where: {
       id: session.user.id,
+    },
+    include: {
+      groups: true,
     },
   });
 

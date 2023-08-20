@@ -25,6 +25,9 @@ export default function Header() {
         <a href="/admin/users" className="mx-6">
           사용자
         </a>
+        <a href="/admin/groups" className="mx-6">
+          사용자 그룹
+        </a>
         <a href="/admin/certs" className="mx-6">
           증명서
         </a>
@@ -51,6 +54,9 @@ export default function Header() {
           </a>
           <a href="/admin/users" className="block p-6 border border-gray-100">
             사용자
+          </a>
+          <a href="/admin/groups" className="block p-6 border border-gray-100">
+            사용자 그룹
           </a>
           <a href="/admin/certs" className="block p-6 border border-gray-100">
             증명서

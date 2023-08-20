@@ -35,9 +35,12 @@ export async function POST(req: Request) {
     where: {
       id: session.user.id,
     },
+    include: {
+      groups: true,
+    },
   });
 
-  if (!user || user.type !== "Admin") {
+  if (!user || !user.groups.find((g) => g.name === "Admin")) {
     return ResponseDTO.status(403).json({
       result: false,
       error: {
@@ -47,7 +50,7 @@ export async function POST(req: Request) {
     });
   }
 
-  const { name, content, issuedAt, users } = await req.json();
+  const { name, description, content, issuedAt, users } = await req.json();
 
   if (!name || !content || !issuedAt || !users) {
     return ResponseDTO.status(400).json({
@@ -103,6 +106,7 @@ export async function POST(req: Request) {
   const results = await prisma.certificate.create({
     data: {
       name,
+      description,
       content: JSON.stringify(content),
       issuedAt: new Date(`${issuedAt}T00:00:00Z`),
       userIds: users as string[],

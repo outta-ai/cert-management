@@ -1,9 +1,7 @@
-import { getServerSession } from "next-auth";
-import validator from "validator";
-
 import authOptions from "lib/auth";
 import { prisma } from "lib/prisma";
 import ResponseDTO from "lib/response";
+import { getServerSession } from "next-auth";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -37,9 +35,9 @@ export async function POST(req: Request) {
     });
   }
 
-  const { name, email, googleId, groups } = await req.json();
+  const { name } = await req.json();
 
-  if (!name || !validator.isEmail(email)) {
+  if (!name) {
     return ResponseDTO.status(400).json({
       result: false,
       error: {
@@ -49,19 +47,14 @@ export async function POST(req: Request) {
     });
   }
 
-  const newUser = await prisma.user.create({
+  const newGroup = await prisma.group.create({
     data: {
       name,
-      email,
-      googleId,
-      groups: {
-        connect: groups,
-      },
     },
   });
 
-  return ResponseDTO.status(201).json({
+  return ResponseDTO.json({
     result: true,
-    data: newUser,
+    data: newGroup,
   });
 }

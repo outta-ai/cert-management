@@ -4,22 +4,26 @@ import { FormEvent, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import { User } from "@prisma/client";
+import { Group } from "@prisma/client";
 
 import validator from "validator";
+
+import IconDown from "assets/icons/icon_down.svg";
+import IconUp from "assets/icons/icon_up.svg";
 
 type DialogProps = {
   open: boolean;
   onClose: () => void;
+  groups: Group[];
 };
 
-export default function UserAddDialog({ open, onClose }: DialogProps) {
+export default function UserAddDialog({ open, onClose, groups }: DialogProps) {
   const router = useRouter();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [googleId, setGoogleId] = useState("");
-  const [type, setType] = useState<User["type"]>("User");
+  const [userGroups, setUserGroups] = useState<Group[]>([]);
 
   const [loading, setLoading] = useState(false);
 
@@ -27,17 +31,13 @@ export default function UserAddDialog({ open, onClose }: DialogProps) {
     setName("");
     setEmail("");
     setGoogleId("");
-    setType("User");
+    setUserGroups([]);
   };
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (
-      !name.trim() ||
-      !validator.isEmail(email) ||
-      !["User", "Member", "Admin"].includes(type)
-    ) {
+    if (!name.trim() || !validator.isEmail(email)) {
       return;
     }
 
@@ -50,7 +50,7 @@ export default function UserAddDialog({ open, onClose }: DialogProps) {
         name,
         email,
         googleId: googleId.trim() ? googleId : null,
-        type,
+        groups: userGroups,
       }),
     });
 
@@ -107,18 +107,39 @@ export default function UserAddDialog({ open, onClose }: DialogProps) {
           />
         </div>
         <div className="mt-3">
-          <p className="font-semibold">
-            유저 타입<span className="text-red-500">*</span>
-          </p>
-          <select
-            className="p-3 border border-gray-300 rounded-md"
-            value={type}
-            onChange={(e) => setType(e.currentTarget.value as User["type"])}
-          >
-            <option value="User">부트캠프 참가자</option>
-            <option value="Member">부원</option>
-            <option value="Admin">관리자</option>
-          </select>
+          <p className="font-semibold">유저 그룹</p>
+          <p className="font-medium">전체 그룹</p>
+          {groups
+            .filter((g) => !userGroups.includes(g))
+            .map((group) => (
+              <div
+                key={group.id}
+                className="border border-gray-200 p-2"
+                onClick={() => setUserGroups([...userGroups, group])}
+                onKeyDown={() => setUserGroups([...userGroups, group])}
+              >
+                {group.name}
+              </div>
+            ))}
+          <div className="flex justify-center my-3">
+            <IconUp className="w-5 h-5" />
+            <IconDown className="w-5 h-5" />
+          </div>
+          <p className="font-medium">유저 그룹</p>
+          {userGroups.map((group) => (
+            <div
+              key={group.id}
+              className="border border-gray-200 p-2"
+              onClick={() =>
+                setUserGroups(userGroups.filter((g) => g !== group))
+              }
+              onKeyDown={() =>
+                setUserGroups(userGroups.filter((g) => g !== group))
+              }
+            >
+              {group.name}
+            </div>
+          ))}
         </div>
         <div className="mt-3 flex justify-end">
           <button
@@ -135,7 +156,7 @@ export default function UserAddDialog({ open, onClose }: DialogProps) {
           <div className="w-3" />
           <button
             type="submit"
-            disabled={!name || !validator.isEmail(email) || !type || loading}
+            disabled={!name || !validator.isEmail(email) || loading}
             className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50"
           >
             추가

@@ -33,9 +33,12 @@ export async function DELETE(req: Request) {
     where: {
       id: session.user.id,
     },
+    include: {
+      groups: true,
+    },
   });
 
-  if (!user || user.type !== "Admin") {
+  if (!user || !user.groups.find((g) => g.name === "Admin")) {
     return ResponseDTO.status(403).json({
       result: false,
       error: {

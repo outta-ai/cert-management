@@ -11,7 +11,7 @@ import IconChevronLeft from "assets/icons/icon_chevron-left.svg";
 export default async function NewCertPage() {
   const user = await withAuth();
 
-  if (!user || user.type !== "Admin") {
+  if (!user || !user.groups.find((g) => g.name === "Admin")) {
     redirect(process.env.BASE_URL);
   }
 

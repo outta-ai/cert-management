@@ -35,7 +35,7 @@ export default async function Cert({ params: { id } }: Props) {
 
   return (
     <main className="container mx-auto">
-      <Header isAdmin={user.type === "Admin"} />
+      <Header isAdmin={!!user.groups.find((g) => g.name === "Admin")} />
       <div className="mt-3 p-6 flex items-center">
         <a href="/" className="mr-2">
           <IconChevronLeft className="w-5 h-5" />

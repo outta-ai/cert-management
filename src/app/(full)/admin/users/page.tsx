@@ -17,15 +17,16 @@ export const metadata = {
 export default async function AdminUserPage() {
   const user = await withAuth();
 
-  if (!user || user.type !== "Admin") {
+  if (!user || !user.groups.find((g) => g.name === "Admin")) {
     redirect(process.env.BASE_URL);
   }
 
-  const users = await prisma.user.findMany();
+  const users = await prisma.user.findMany({ include: { groups: true } });
   const registeredUsers = users.filter((user) => user.googleId);
+  const groups = await prisma.group.findMany();
 
   return (
-    <Providers>
+    <Providers groups={groups}>
       <main className="container mx-auto">
         <Header />
         <section className="mt-6 p-6">
@@ -56,7 +57,7 @@ export default async function AdminUserPage() {
           <Form users={users} />
         </section>
       </main>
-      <UserInfo users={users} />
+      <UserInfo users={users} groups={groups} />
     </Providers>
   );
 }
