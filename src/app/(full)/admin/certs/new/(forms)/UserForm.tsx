@@ -1,14 +1,19 @@
-import { User } from "@prisma/client";
+import { Group, User } from "@prisma/client";
 import { useState } from "react";
+
+import IconLeft from "assets/icons/icon_left.svg";
+import IconRight from "assets/icons/icon_right.svg";
 
 type Props = {
   file: File | null;
-  users: User[];
-  selectedUsers: User[];
-  setSelectedUsers: React.Dispatch<React.SetStateAction<User[]>>;
+  users: (User & { groups: Group[] })[];
+  selectedUsers: (User & { groups: Group[] })[];
+  setSelectedUsers: React.Dispatch<
+    React.SetStateAction<(User & { groups: Group[] })[]>
+  >;
 };
 
-const filterFunc = (search: string) => (user: User) => {
+const filterFunc = (search: string) => (user: User & { groups: Group[] }) => {
   if (!search || !search.trim()) {
     return true;
   }
@@ -25,6 +30,10 @@ const filterFunc = (search: string) => (user: User) => {
     return true;
   }
 
+  if (user.groups.some((group) => group.name.includes(search))) {
+    return true;
+  }
+
   return false;
 };
 
@@ -37,14 +46,12 @@ export default function UserForm({
   const [searchSelect, setSearchSelect] = useState("");
   const [searchNotSelect, setSearchNotSelect] = useState("");
 
-  const filteredSelectedUsers = selectedUsers.filter((user) =>
-    filterFunc(searchSelect)
-  );
+  const filteredSelectedUsers = selectedUsers.filter(filterFunc(searchSelect));
 
   const notSelectedUsers = users.filter((user) => {
     return !selectedUsers.find((selectedUser) => selectedUser.id === user.id);
   });
-  const filteredNotSelectedUsers = notSelectedUsers.filter((user) =>
+  const filteredNotSelectedUsers = notSelectedUsers.filter(
     filterFunc(searchNotSelect)
   );
 
@@ -62,7 +69,7 @@ export default function UserForm({
             className="w-full border border-gray-300 rounded-md p-2"
             value={searchNotSelect}
             onChange={(e) => setSearchNotSelect(e.currentTarget.value)}
-            placeholder="검색 (Google ID, 이메일, 이름)"
+            placeholder="검색 (Google ID, 이메일, 이름, 그룹)"
           />
           {filteredNotSelectedUsers.map((user) => (
             <div
@@ -86,7 +93,25 @@ export default function UserForm({
             </div>
           ))}
         </div>
-        <div className="w-6" />
+        <div className="w-12 mt-16 flex flex-col justify-center items-center">
+          <IconLeft
+            className="w-5 h-5 cursor-pointer"
+            onClick={() => {
+              setSelectedUsers(
+                selectedUsers.filter(
+                  (user) => !filteredSelectedUsers.includes(user)
+                )
+              );
+            }}
+          />
+          <div className="w-3 h-3" />
+          <IconRight
+            className="w-5 h-5 cursor-pointer"
+            onClick={() => {
+              setSelectedUsers([...selectedUsers, ...filteredNotSelectedUsers]);
+            }}
+          />
+        </div>
         <div className="flex-1">
           <p className="font-semibold text-gray-600">발급할 사용자</p>
           <input
@@ -94,7 +119,7 @@ export default function UserForm({
             className="w-full border border-gray-300 rounded-md p-2"
             value={searchSelect}
             onChange={(e) => setSearchSelect(e.target.value)}
-            placeholder="검색 (Google ID, 이메일, 이름)"
+            placeholder="검색 (Google ID, 이메일, 이름, 그룹)"
           />
           {filteredSelectedUsers.map((user) => (
             <div

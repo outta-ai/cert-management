@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 
-import { User } from "@prisma/client";
+import { Group, User } from "@prisma/client";
 
 import { Canvas, Image, Rect, Text } from "fabric";
 
@@ -11,7 +11,7 @@ import FileForm from "./(forms)/FileForm";
 import UserForm from "./(forms)/UserForm";
 
 type Props = {
-  users: User[];
+  users: (User & { groups: Group[] })[];
 };
 
 export default function Form({ users }: Props) {
@@ -19,7 +19,9 @@ export default function Form({ users }: Props) {
 
   const [file, setFile] = useState<File | null>(null);
   const [canvasData, setCanvasData] = useState<CanvasData[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<
+    (User & { groups: Group[] })[]
+  >([]);
 
   const [orientation, setOrientation] = useState<"landscape" | "portrait">(
     "portrait"

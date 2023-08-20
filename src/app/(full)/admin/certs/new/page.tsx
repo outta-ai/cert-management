@@ -15,7 +15,7 @@ export default async function NewCertPage() {
     redirect(process.env.BASE_URL);
   }
 
-  const users = await prisma.user.findMany({});
+  const users = await prisma.user.findMany({ include: { groups: true } });
 
   return (
     <main className="container mx-auto">
