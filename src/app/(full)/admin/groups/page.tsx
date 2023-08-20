@@ -7,6 +7,7 @@ import Header from "../Header";
 import GroupAdd from "./GroupAdd";
 import Providers from "./Providers";
 import Table from "./Table";
+import GroupInfo from "./GroupInfo";
 
 export const metadata = {
   title: "관리자 | OUTTA 증명서 발급센터",
@@ -44,6 +45,7 @@ export default async function AdminGroupPage() {
           <Table groups={groups} />
         </section>
       </main>
+      <GroupInfo groups={groups} />
     </Providers>
   );
 }

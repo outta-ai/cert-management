@@ -33,17 +33,25 @@ const authOptions = {
             });
           }
 
-          await prisma.user.create({
-            data: {
-              name: googleProfile.name,
-              email: googleProfile.email,
-              googleId,
-              memo: "Default admin user",
-              groups: {
-                connect: adminGroup,
-              },
+          const adminUser = await prisma.user.findUnique({
+            where: {
+              email: process.env.DEFAULT_ADMIN_EMAIL,
             },
           });
+
+          if (!adminUser) {
+            await prisma.user.create({
+              data: {
+                name: googleProfile.name,
+                email: googleProfile.email,
+                googleId,
+                memo: "Default admin user",
+                groups: {
+                  connect: adminGroup,
+                },
+              },
+            });
+          }
 
           return true;
         }

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Group, User } from "@prisma/client";
 
 import IconClose from "assets/icons/icon_close.svg";
+import { useRouter } from "next/navigation";
 import { StringParam, useQueryParam } from "use-query-params";
 
 type ContentProps = {
@@ -17,6 +18,8 @@ type ContentProps = {
 };
 
 function UserInfoContent({ user, groups, onlyAdmin, onClose }: ContentProps) {
+  const router = useRouter();
+
   const [memo, setMemo] = useState(user.memo);
   const [userGroups, setUserGroups] = useState(user.groups);
 
@@ -32,6 +35,7 @@ function UserInfoContent({ user, groups, onlyAdmin, onClose }: ContentProps) {
 
     setLoading(false);
     onClose();
+    router.refresh();
   };
 
   const onSubmit = async () => {
