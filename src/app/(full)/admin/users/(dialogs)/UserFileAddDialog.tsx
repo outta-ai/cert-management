@@ -46,7 +46,7 @@ export default function UserFileAddDialog({ open, onClose }: DialogProps) {
     if (result.ok) {
       setResult((await result.json()).data);
     } else {
-      setError((await result.json()).message);
+      setError((await result.json()).error.message);
     }
 
     setLoading(false);

@@ -44,8 +44,6 @@ export async function POST(req: Request) {
   const headers = lines[0].split(",");
   const hasHeader = headers.some((h) => header.includes(h));
 
-  console.log(headers, hasHeader);
-
   if (
     hasHeader &&
     !["이름", "이메일", "그룹"].every((must) => headers.includes(must))
