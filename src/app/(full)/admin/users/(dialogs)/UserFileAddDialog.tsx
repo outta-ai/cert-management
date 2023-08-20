@@ -43,7 +43,12 @@ export default function UserFileAddDialog({ open, onClose }: DialogProps) {
       body: content,
     });
 
-    setResult((await result.json()).data);
+    if (result.ok) {
+      setResult((await result.json()).data);
+    } else {
+      setError((await result.json()).message);
+    }
+
     setLoading(false);
   };
 
@@ -88,7 +93,7 @@ export default function UserFileAddDialog({ open, onClose }: DialogProps) {
           />
         </div>
         {error && <p className="text-red-500 mt-2">{error}</p>}
-        {result.length === 0 && users.length > 0 && (
+        {result?.length === 0 && users.length > 0 && (
           <div className="mt-3 w-full max-h-[320px] overflow-auto">
             <h3 className="text-lg font-semibold">추가할 사용자</h3>
             <ul className="mt-2">
@@ -100,7 +105,7 @@ export default function UserFileAddDialog({ open, onClose }: DialogProps) {
             </ul>
           </div>
         )}
-        {result.length > 0 && (
+        {result?.length > 0 && (
           <div className="mt-3 w-full max-h-[320px] overflow-auto">
             <h3 className="text-lg font-semibold">추가 결과</h3>
             <ul className="mt-2">
@@ -130,7 +135,7 @@ export default function UserFileAddDialog({ open, onClose }: DialogProps) {
             취소
           </button>
           <div className="w-3" />
-          {result.length === 0 && (
+          {result?.length === 0 && (
             <button
               type="submit"
               disabled={loading || !file}
@@ -139,7 +144,7 @@ export default function UserFileAddDialog({ open, onClose }: DialogProps) {
               추가
             </button>
           )}
-          {result.length > 0 && (
+          {result?.length > 0 && (
             <button
               type="button"
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50"

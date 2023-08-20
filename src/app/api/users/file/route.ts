@@ -59,71 +59,91 @@ export async function POST(req: Request) {
     });
   }
 
-  const users: (User & { groups: Group[] })[] = [];
+  try {
+    const users: (User & { groups: Group[] })[] = [];
 
-  for (const line of lines.slice(hasHeader ? 1 : 0)) {
-    const values = line.split(",");
+    for (const line of lines.slice(hasHeader ? 1 : 0)) {
+      if (line.trim().length === 0) {
+        continue;
+      }
 
-    const user: Partial<User & { groups: Group[] }> = {};
+      const values = line.split(",");
 
-    for (const [i, header] of headers.entries()) {
-      if (header === "그룹") {
-        if (!user.groups) {
-          user.groups = [];
-        }
+      const user: Partial<User & { groups: Group[] }> = {};
 
-        for (const g of values[i].split("|")) {
-          console.log(g);
-
-          const group = await prisma.group.findUnique({
-            where: { id: g },
-          });
-
-          if (!group) {
-            throw new Error("유저 타입이 올바르지 않습니다.");
+      for (const [i, header] of headers.entries()) {
+        if (header === "그룹") {
+          if (!user.groups) {
+            user.groups = [];
           }
 
-          user.groups.push(group);
+          for (const g of values[i].split("|")) {
+            const group = await prisma.group.findUnique({
+              where: { id: g },
+            });
+
+            if (!group) {
+              throw new Error("유저 타입이 올바르지 않습니다.");
+            }
+
+            user.groups.push(group);
+          }
+        } else if (header === "Google ID") {
+          user.googleId = values[i].trim() ? values[i] : null;
+        } else if (header === "이름") {
+          user.name = values[i].trim();
+        } else if (header === "이메일") {
+          user.email = values[i].trim();
+        } else if (header === "메모") {
+          user.memo = values[i].trim();
         }
-      } else if (header === "Google ID") {
-        user.googleId = values[i].trim() ? values[i] : null;
-      } else if (header === "이름") {
-        user.name = values[i].trim();
-      } else if (header === "이메일") {
-        user.email = values[i].trim();
-      } else if (header === "메모") {
-        user.memo = values[i].trim();
       }
+
+      users.push(user as User & { groups: Group[] });
     }
 
-    users.push(user as User & { groups: Group[] });
-  }
-
-  console.log(users);
-
-  const result: Partial<User & { groups: Group[] }> & { result: boolean }[] =
-    [];
-  for (const user of users) {
-    const resultUser = await prisma.user.create({
-      data: {
-        name: user.name,
-        email: user.email,
-        googleId: user.googleId,
-        memo: user.memo,
-        groups: {
-          connect: user.groups?.map((g) => ({ id: g.id })),
+    const result: Partial<User & { groups: Group[] }> & { result: boolean }[] =
+      [];
+    for (const user of users) {
+      const resultUser = await prisma.user.create({
+        data: {
+          name: user.name,
+          email: user.email,
+          googleId: user.googleId,
+          memo: user.memo,
+          groups: {
+            connect: user.groups?.map((g) => ({ id: g.id })),
+          },
         },
-      },
-    });
+      });
 
-    result.push({
-      result: !!resultUser.id,
-      ...resultUser,
+      result.push({
+        result: !!resultUser.id,
+        ...resultUser,
+      });
+    }
+
+    return ResponseDTO.json({
+      result: true,
+      data: result,
     });
+  } catch (e) {
+    if (e instanceof Error) {
+      return ResponseDTO.status(400).json({
+        result: false,
+        error: {
+          title: "Bad Request",
+          message: e.message,
+        },
+      });
+    } else {
+      return ResponseDTO.status(500).json({
+        result: false,
+        error: {
+          title: "Internal Server Error",
+          message: "알 수 없는 오류가 발생했습니다",
+        },
+      });
+    }
   }
-
-  return ResponseDTO.json({
-    result: true,
-    data: result,
-  });
 }

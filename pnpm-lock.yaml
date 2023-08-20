@@ -38,6 +38,9 @@ dependencies:
   fabric:
     specifier: 6.0.0-beta7
     version: 6.0.0-beta7(bufferutil@4.0.7)(encoding@0.1.13)(utf-8-validate@5.0.10)
+  iconv-lite:
+    specifier: ^0.6.3
+    version: 0.6.3
   mime-types:
     specifier: ^2.1.35
     version: 2.1.35
