@@ -25,27 +25,27 @@ export default function Form({ users: fullUsers }: Props) {
   const [search, setSearch] = useState(paramSearch);
   const debouncedSearch = useDebounce(search, 100);
 
-  const users = fullUsers
-    .filter((user) => {
-      if (!search || !search.trim()) {
-        return true;
-      }
+  const filteredUsers = fullUsers.filter((user) => {
+    if (!search || !search.trim()) {
+      return true;
+    }
 
-      if (user.googleId?.includes(search)) {
-        return true;
-      }
+    if (user.googleId?.includes(search)) {
+      return true;
+    }
 
-      if (user.email.includes(search)) {
-        return true;
-      }
+    if (user.email.includes(search)) {
+      return true;
+    }
 
-      if (user.name.includes(search)) {
-        return true;
-      }
+    if (user.name.includes(search)) {
+      return true;
+    }
 
-      return false;
-    })
-    .slice((page - 1) * 10, page * 10);
+    return false;
+  });
+
+  const slicedUsers = filteredUsers.slice((page - 1) * 10, page * 10);
 
   useEffect(() => {
     setQuery({ search: debouncedSearch });
@@ -61,7 +61,7 @@ export default function Form({ users: fullUsers }: Props) {
           onChange={(e) => setSearch(e.currentTarget.value)}
         />
         <div className="mt-3">
-          {users.map((user) => (
+          {slicedUsers.map((user) => (
             <div
               onClick={() => {
                 setQuery({ user: user.id });
@@ -86,7 +86,7 @@ export default function Form({ users: fullUsers }: Props) {
         <Pagination
           page={page}
           setPage={(page) => setQuery({ page })}
-          total={users.length}
+          total={filteredUsers.length}
         />
       </div>
     </>

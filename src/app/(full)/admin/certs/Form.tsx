@@ -46,27 +46,27 @@ export default function Form({ certs: fullCerts, users }: Props) {
     })
     .map((user) => user.id);
 
-  const certs = fullCerts
-    .filter((cert) => {
-      if (!search || !search.trim()) {
-        return true;
-      }
+  const filteredCerts = fullCerts.filter((cert) => {
+    if (!search || !search.trim()) {
+      return true;
+    }
 
-      if (cert.name.includes(search)) {
-        return true;
-      }
+    if (cert.name.includes(search)) {
+      return true;
+    }
 
-      if (cert.content.includes(search)) {
-        return true;
-      }
+    if (cert.content.includes(search)) {
+      return true;
+    }
 
-      if (cert.userIds.some((id) => filteredUserIds.includes(id))) {
-        return true;
-      }
+    if (cert.userIds.some((id) => filteredUserIds.includes(id))) {
+      return true;
+    }
 
-      return false;
-    })
-    .slice((page - 1) * 10, page * 10);
+    return false;
+  });
+
+  const slicedCerts = filteredCerts.slice((page - 1) * 10, page * 10);
 
   useEffect(() => {
     setQuery({ search: debouncedSearch });
@@ -83,7 +83,7 @@ export default function Form({ certs: fullCerts, users }: Props) {
         />
       </form>
       <div className="mt-3">
-        {certs.map((cert) => (
+        {slicedCerts.map((cert) => (
           <div
             onClick={() => {
               setQuery({ cert: cert.id });
@@ -102,7 +102,7 @@ export default function Form({ certs: fullCerts, users }: Props) {
         <Pagination
           page={page}
           setPage={(page) => setQuery({ page })}
-          total={certs.length}
+          total={filteredCerts.length}
         />
       </div>
     </>
