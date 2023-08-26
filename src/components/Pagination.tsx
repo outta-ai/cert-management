@@ -17,7 +17,7 @@ export default function Pagination({
   perPage = 10,
 }: Props) {
   const totalpages = Math.ceil(total / perPage);
-  const currentBlock = Math.floor(page / 10) + 1;
+  const currentBlock = Math.floor((page - 1) / 10) + 1;
 
   const startPage = (currentBlock - 1) * 10 + 1;
   const endPage = Math.min(currentBlock * 10, totalpages);
